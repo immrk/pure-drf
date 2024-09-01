@@ -1,6 +1,6 @@
 {
-  "Version": "5.8.0",
-  "Title": "PureAdmin",
+  "Version": "0.0.1",
+  "Title": "Pure Django",
   "FixedHeader": true,
   "HiddenSideBar": false,
   "MultiTagsCache": false,

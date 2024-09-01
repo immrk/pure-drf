@@ -33,8 +33,8 @@ dataThemeChange(overallStyle.value);
 const { title } = useNav();
 
 const ruleForm = reactive({
-  username: "admin",
-  password: "admin123"
+  email: "",
+  password: ""
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
@@ -43,9 +43,10 @@ const onLogin = async (formEl: FormInstance | undefined) => {
     if (valid) {
       loading.value = true;
       useUserStoreHook()
-        .loginByUsername({ username: ruleForm.username, password: "admin123" })
+        .loginByUsername({ email: ruleForm.email, password: ruleForm.password })
         .then(res => {
           if (res.success) {
+            console.log(res);
             // 获取后端路由
             return initRouter().then(() => {
               router.push(getTopMenu(true).path).then(() => {
@@ -53,6 +54,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
               });
             });
           } else {
+            console.log(res);
             message("登录失败", { type: "error" });
           }
         })
@@ -112,16 +114,16 @@ onBeforeUnmount(() => {
                 :rules="[
                   {
                     required: true,
-                    message: '请输入账号',
+                    message: '请输入邮箱',
                     trigger: 'blur'
                   }
                 ]"
-                prop="username"
+                prop="email"
               >
                 <el-input
-                  v-model="ruleForm.username"
+                  v-model="ruleForm.email"
                   clearable
-                  placeholder="账号"
+                  placeholder="邮箱账号"
                   :prefix-icon="useRenderIcon(User)"
                 />
               </el-form-item>

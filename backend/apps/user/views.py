@@ -42,7 +42,7 @@ class UserViewSet(viewsets.ModelViewSet):
             {"detail": "Delete operation is not allowed."},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
         )
-    
+
     # 自定义新方法，当使用DefaultRouter配置路由时，会自动使用函数名创建路径为 /get_self/
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def self(self, request):
@@ -60,7 +60,7 @@ class LoginView(APIView):
     """
 
     permission_classes = [AllowAny]
-    authentication_classes = [] # 该接口不需要鉴权
+    authentication_classes = []  # 该接口不需要鉴权
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -72,9 +72,12 @@ class LoginView(APIView):
                 refresh = RefreshToken.for_user(user)
                 return Response(
                     {
-                        "refresh": str(refresh),
-                        "access": str(refresh.access_token),
-                        "msg": "登陆成功",
+                        "success": True,
+                        "data": {
+                            "refreshToken": str(refresh),
+                            "accessToken": str(refresh.access_token),
+                            "expires": "2030/10/30 00:00:00"
+                        },
                     },
                     status=status.HTTP_200_OK,
                 )
