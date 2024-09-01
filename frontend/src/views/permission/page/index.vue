@@ -16,6 +16,8 @@ const elStyle = computed((): CSSProperties => {
   };
 });
 
+const email = ref(useUserStoreHook()?.email);
+
 const username = ref(useUserStoreHook()?.username);
 
 const options = [
@@ -31,7 +33,7 @@ const options = [
 
 function onChange() {
   useUserStoreHook()
-    .loginByUsername({ username: username.value, password: "admin123" })
+    .loginByEmail({ email: email.value, password: "admin123" })
     .then(res => {
       if (res.success) {
         storageLocal().removeItem("async-routes");

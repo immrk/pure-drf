@@ -21,6 +21,8 @@ export const useUserStore = defineStore({
   state: (): userType => ({
     // 头像
     avatar: storageLocal().getItem<DataInfo<number>>(userKey)?.avatar ?? "",
+    // 邮箱
+    email: storageLocal().getItem<DataInfo<number>>(userKey)?.email ?? "",
     // 用户名
     username: storageLocal().getItem<DataInfo<number>>(userKey)?.username ?? "",
     // 昵称
@@ -39,6 +41,10 @@ export const useUserStore = defineStore({
     /** 存储头像 */
     SET_AVATAR(avatar: string) {
       this.avatar = avatar;
+    },
+    /** 存储邮箱 */
+    SET_EMAIL(email: string) {
+      this.email = email;
     },
     /** 存储用户名 */
     SET_USERNAME(username: string) {
@@ -65,7 +71,7 @@ export const useUserStore = defineStore({
       this.loginDay = Number(value);
     },
     /** 登入 */
-    async loginByUsername(data) {
+    async loginByEmail(data) {
       return new Promise<UserResult>((resolve, reject) => {
         getLogin(data)
           .then(data => {
@@ -79,6 +85,7 @@ export const useUserStore = defineStore({
     },
     /** 前端登出（不调用接口） */
     logOut() {
+      this.email = "";
       this.username = "";
       this.roles = [];
       this.permissions = [];

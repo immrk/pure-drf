@@ -43,18 +43,17 @@ const onLogin = async (formEl: FormInstance | undefined) => {
     if (valid) {
       loading.value = true;
       useUserStoreHook()
-        .loginByUsername({ email: ruleForm.email, password: ruleForm.password })
+        .loginByEmail({ email: ruleForm.email, password: ruleForm.password })
         .then(res => {
           if (res.success) {
-            console.log(res);
             // 获取后端路由
             return initRouter().then(() => {
+              console.log("动态路由获取成功");
               router.push(getTopMenu(true).path).then(() => {
                 message("登录成功", { type: "success" });
               });
             });
           } else {
-            console.log(res);
             message("登录失败", { type: "error" });
           }
         })
