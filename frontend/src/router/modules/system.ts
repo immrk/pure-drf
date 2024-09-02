@@ -13,7 +13,8 @@ export default {
       name: "usermanage",
       component: () => import("@/views/system/index.vue"),
       meta: {
-        title: "用户管理"
+        title: "用户管理",
+        keepAlive: true
       }
     },
     {
@@ -21,7 +22,8 @@ export default {
       name: "permissionManage",
       component: () => import("@/views/system/permission/index.vue"),
       meta: {
-        title: "权限管理"
+        title: "权限管理",
+        keepAlive: true
       }
     }
   ]

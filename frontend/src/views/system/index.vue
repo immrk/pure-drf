@@ -15,6 +15,9 @@
       <el-table-column #default="scope" align="center" label="状态">
         <el-switch
           v-model="scope.row.is_active"
+          active-text="启用"
+          inactive-text="禁用"
+          :inline-prompt="true"
           @change="handleStatusChange(scope.row)"
         />
       </el-table-column>

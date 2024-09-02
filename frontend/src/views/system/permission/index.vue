@@ -32,7 +32,6 @@
           <span>权限配置</span>
         </div>
       </template>
-
       <el-transfer
         v-model="value"
         :data="data"
@@ -75,6 +74,27 @@ const groupList = ref([
   }
 ]);
 
+interface Option {
+  key: number;
+  label: string;
+  disabled: boolean;
+}
+
+const generateData = () => {
+  const data: Option[] = [];
+  for (let i = 1; i <= 15; i++) {
+    data.push({
+      key: i,
+      label: `Option ${i}`,
+      disabled: i % 4 === 0
+    });
+  }
+  return data;
+};
+
+const data = ref<Option[]>(generateData());
+const value = ref([]);
+
 const selectChange = () => {
   groupSelectShow.value = groupList.value.find(
     group => group.id === groupSelect.value
@@ -87,13 +107,16 @@ const selectChange = () => {
   width: 100%;
   /* height: 100%; */
   display: flex;
-  padding-bottom: 24px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
 }
 
 .selector {
   padding: 5px;
   margin-top: 10px;
   height: 300px !important;
+  width: 250px;
   border-radius: 5px;
   height: 100%;
   background-color: var(--el-bg-color-page);
@@ -101,13 +124,13 @@ const selectChange = () => {
 
 .setting {
   flex: 1;
-  margin: 0 20px;
+  /* margin: 0 20px; */
 }
 
 .el-transfer {
   display: flex;
   justify-content: space-evenly;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .el-transfer :deep().el-transfer-panel {
