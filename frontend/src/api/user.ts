@@ -65,7 +65,9 @@ export const getLogin = (data?: object) => {
 
 /** 刷新`token` */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", "/refresh-token/", { data });
+  return http.request<RefreshTokenResult>("post", "/api/token/refresh/", {
+    data
+  });
 };
 
 /** 获取用户数据列表 */
