@@ -78,14 +78,16 @@ class LoginView(APIView):
                 expiration_time = current_time + access_token.lifetime + timezone.timedelta(hours=8)
                 expiration_time_str = expiration_time.strftime(
                     '%Y/%m/%d %H:%M:%S')
+                # 序列化user数据
+                userdata = UserSerializer(user).data
                 return Response(
                     {
                         "success": True,
                         "data": {
-                            "avatar": "https://avatars.githubusercontent.com/u/44761321",
-                            "username": "admin",
-                            "nickname": "yajianke",
-                            "roles": ["admin"],
+                            "avatar": userdata["avatar"],
+                            "username": userdata["username"],
+                            "nickname": userdata["nickname"],
+                            "roles": userdata["roles"],
                             "permissions": ["*:*:*"],
                             "refreshToken": str(refresh),
                             "accessToken": str(refresh.access_token),
@@ -112,7 +114,7 @@ class AsyncRoutesView(APIView):
             "meta": {
                 "title": "权限管理",
                 "icon": "ep:lollipop",
-                "rank": 10
+                "rank": 2
             },
             "children": [
                 {

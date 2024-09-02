@@ -12,8 +12,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1(echarts@5.5.1)(element-plus@2.8.0(vue@3.4.38(typescript@5.5.4)))(typescript@5.5.4)
       '@pureadmin/table':
-        specifier: ^3.2.0
-        version: 3.2.0(element-plus@2.8.0(vue@3.4.38(typescript@5.5.4)))(typescript@5.5.4)
+        specifier: ^3.2.1
+        version: 3.2.1(element-plus@2.8.0(vue@3.4.38(typescript@5.5.4)))(typescript@5.5.4)
       '@pureadmin/utils':
         specifier: ^2.4.8
         version: 2.4.8(echarts@5.5.1)(vue@3.4.38(typescript@5.5.4))
@@ -914,8 +914,8 @@ packages:
     peerDependencies:
       element-plus: ^2.0.0
 
-  '@pureadmin/table@3.2.0':
-    resolution: {integrity: sha512-5H09KrQDeGpxVxOKCISi65WcT7mSuyhGTHiDcHUcaZFXMkB874ZikDBuNFMUp4ccqyztoD6AAo9Tk/cqCMhbuQ==}
+  '@pureadmin/table@3.2.1':
+    resolution: {integrity: sha512-sqkAQWRDx6X0dADUgrYHvA7QfocF+VB5rPe1yFQWjh7tcHNasthFRDCS5Fmw7JQ0R3h6S7aBK450ye2/TLv4JQ==}
     peerDependencies:
       element-plus: ^2.0.0
 
@@ -4551,7 +4551,7 @@ snapshots:
       - echarts
       - typescript
 
-  '@pureadmin/table@3.2.0(element-plus@2.8.0(vue@3.4.38(typescript@5.5.4)))(typescript@5.5.4)':
+  '@pureadmin/table@3.2.1(element-plus@2.8.0(vue@3.4.38(typescript@5.5.4)))(typescript@5.5.4)':
     dependencies:
       element-plus: 2.8.0(vue@3.4.38(typescript@5.5.4))
       vue: 3.4.38(typescript@5.5.4)

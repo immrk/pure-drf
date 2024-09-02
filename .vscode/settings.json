@@ -7,7 +7,7 @@
   "editor.tabSize": 2,
   "editor.formatOnPaste": true,
   "editor.guides.bracketPairs": "active",
-  "files.autoSave": "afterDelay",
+  "files.autoSave": "off",
   "git.confirmSync": false,
   "workbench.startupEditor": "newUntitledFile",
   "editor.suggestSelection": "first",
@@ -27,9 +27,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "iconify.excludes": [
-    "el"
-  ],
+  "iconify.excludes": ["el"],
   "vscodeCustomCodeColor.highlightValue": [
     "v-loading",
     "v-auth",
@@ -39,5 +37,5 @@
     "v-perms",
     "v-ripple"
   ],
-  "vscodeCustomCodeColor.highlightValueColor": "#b392f0",
+  "vscodeCustomCodeColor.highlightValueColor": "#b392f0"
 }

@@ -29,10 +29,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
     自定义用户表, 实现auth鉴权与权限管理, 实现自定义字段(会自动补上password与last_login字段)
     """
-    username = models.CharField(max_length=100, unique=False)
+    avatar = models.CharField(max_length=100, unique=False, default=None, null=True)
+    nickname = models.CharField(max_length=100, unique=False, default=None, null=True)
+    username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
