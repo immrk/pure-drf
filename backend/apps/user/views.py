@@ -70,21 +70,26 @@ class LoginView(APIView):
             password = serializer.validated_data["password"]
             user = authenticate(email=email, password=password)
             if user is not None:
+                current_time = timezone.now()
                 # 生成token
                 refresh = RefreshToken.for_user(user)
                 access_token = refresh.access_token
-                # 获取当前时间和过期时间
-                current_time = timezone.now()
-                expiration_time = current_time + access_token.lifetime
+                # 获取当前时间和过期时间+8小时
+                expiration_time = current_time + access_token.lifetime + timezone.timedelta(hours=8)
                 expiration_time_str = expiration_time.strftime(
                     '%Y/%m/%d %H:%M:%S')
                 return Response(
                     {
                         "success": True,
                         "data": {
+                            "avatar": "https://avatars.githubusercontent.com/u/44761321",
+                            "username": "admin",
+                            "nickname": "yajianke",
+                            "roles": ["admin"],
+                            "permissions": ["*:*:*"],
                             "refreshToken": str(refresh),
                             "accessToken": str(refresh.access_token),
-                            "expires": "2030/10/30 00:00:00"
+                            "expires": expiration_time_str
                         },
                     },
                     status=status.HTTP_200_OK,
