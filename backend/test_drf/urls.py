@@ -21,5 +21,6 @@ from utils.authenticator import CustomTokenRefreshView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('apps.user.urls')),  # 包含user应用的URL
+    path('api/system/', include('apps.system.urls')),  # 包含user应用的URL
     path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
 ]

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # 自定义app
     'apps.user',
+    'apps.system',
 ]
 
 MIDDLEWARE = [
@@ -131,7 +132,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # auth鉴权设置
-AUTH_USER_MODEL = 'user.User' # 指定自定义用户数据表(应用名.模型名)
+AUTH_USER_MODEL = 'user.User'  # 指定自定义用户数据表(应用名.模型名)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -144,16 +145,16 @@ REST_FRAMEWORK = {
 
 # jwt设置
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15), # 设置访问 token 的过期时间
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # 设置刷新 token 的过期时间
-    'ROTATE_REFRESH_TOKENS': True, # 是否在使用刷新 token 时旋转
-    'BLACKLIST_AFTER_ROTATION': True, # 是否在刷新后将旧的刷新 token 加入黑名单
-    'ALGORITHM': 'HS256', # 使用的算法
-    'SIGNING_KEY': 'dev', # 用于签名的密钥
-    'VERIFYING_KEY': None, # 验证 token 时使用的密钥（可选）
-    'AUTH_HEADER_TYPES': ('Bearer',), # 设置授权头类型
-    'USER_ID_FIELD': 'id', # 存入jwt的user数据字段
-    'USER_ID_CLAIM': 'user_id', # jwt中存储的数据标签
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # 设置访问 token 的过期时间
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # 设置刷新 token 的过期时间
+    'ROTATE_REFRESH_TOKENS': True,  # 是否在使用刷新 token 时旋转
+    'BLACKLIST_AFTER_ROTATION': True,  # 是否在刷新后将旧的刷新 token 加入黑名单
+    'ALGORITHM': 'HS256',  # 使用的算法
+    'SIGNING_KEY': 'dev',  # 用于签名的密钥
+    'VERIFYING_KEY': None,  # 验证 token 时使用的密钥（可选）
+    'AUTH_HEADER_TYPES': ('Bearer',),  # 设置授权头类型
+    'USER_ID_FIELD': 'id',  # 存入jwt的user数据字段
+    'USER_ID_CLAIM': 'user_id',  # jwt中存储的数据标签
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
