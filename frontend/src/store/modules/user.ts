@@ -15,6 +15,7 @@ import {
 } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
+import { message } from "@/utils/message";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -106,6 +107,13 @@ export const useUserStore = defineStore({
           })
           .catch(error => {
             reject(error);
+            // 更新错误时，则提示登录失效并跳转登录页面
+            const errorMessage = error.response.data.data.msg
+              ? error.response.data.data.msg
+              : "更新登陆状态错误";
+            message(errorMessage, { type: "error" });
+            removeToken();
+            router.push("/login");
           });
       });
     }

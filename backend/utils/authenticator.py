@@ -12,11 +12,11 @@ class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         # 调用父类的 post 方法来获取默认的响应
         current_time = timezone.now()
-        response = super().post(request, *args, **kwargs)
 
         # 检查响应状态是否为 200 (OK)
-        if response.status_code == status.HTTP_200_OK:
+        try:
             # 获取原始数据
+            response = super().post(request, *args, **kwargs)
             original_data = response.data
             access_token = original_data.get('access')
             refresh_token = original_data.get('refresh')
@@ -36,12 +36,14 @@ class CustomTokenRefreshView(TokenRefreshView):
                     'expires': expiration_time_str
                 }
             }
-        else:
+        except:
             # 处理错误响应
             custom_data = {
                 'success': False,
-                'data': response.data
+                'data': {
+                    "msg": "登录信息已失效"
+                }
             }
 
         # 返回自定义响应
-        return Response(custom_data, status=response.status_code)
+        return Response(custom_data, status=401)

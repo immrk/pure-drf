@@ -146,7 +146,7 @@ REST_FRAMEWORK = {
 # jwt设置
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # 设置访问 token 的过期时间
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # 设置刷新 token 的过期时间
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # 设置刷新 token 的过期时间
     'ROTATE_REFRESH_TOKENS': True,  # 是否在使用刷新 token 时旋转
     'BLACKLIST_AFTER_ROTATION': True,  # 是否在刷新后将旧的刷新 token 加入黑名单
     'ALGORITHM': 'HS256',  # 使用的算法
