@@ -4,7 +4,7 @@
       <el-card shadow="never" class="left">
         <template #header>
           <div style="display: flex; justify-content: space-between">
-            <span>群组选择</span>
+            <span>角色选择</span>
             <el-button
               type="primary"
               size="small"
@@ -61,7 +61,7 @@
       </el-card>
     </div>
     <!-- 新增群组弹出框 -->
-    <el-dialog v-model="addGroupShow" title="新增群组" width="30%">
+    <el-dialog v-model="addGroupShow" title="新增角色" width="30%">
       <el-input
         v-model="newgroup.name"
         placeholder="请输入需要新增的群组名称"
