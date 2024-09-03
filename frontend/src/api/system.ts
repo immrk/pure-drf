@@ -29,3 +29,8 @@ export const postGroup = (data?: object) => {
 export const deletGroup = (id?: number) => {
   return http.request("delete", "api/system/groups/" + id + "/");
 };
+
+// permission接口
+export const getPermissions = () => {
+  return http.request<GroupResult>("get", "api/system/permissions/");
+};

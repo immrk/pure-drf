@@ -50,10 +50,35 @@
           </div>
         </template>
         <el-transfer
-          v-model="value"
-          :data="data"
+          v-model="permissionsValue"
+          :data="permissionsData"
           :titles="['可选权限', '已选权限']"
-        />
+        >
+          <template v-slot="{ option }">
+            <span class="option">
+              {{ option.label }}
+              <Icon
+                icon="lucide:edit"
+                class="deleteIcon"
+                @click="
+                  PermissionsShow = true;
+                  PermissionsOperation = '编辑';
+                "
+              />
+            </span>
+          </template>
+          <template #left-footer>
+            <el-button
+              class="transfer-footer"
+              size="small"
+              @click="
+                PermissionsShow = true;
+                PermissionsOperation = '新增';
+              "
+              >新增权限</el-button
+            >
+          </template>
+        </el-transfer>
         <div class="buttom">
           <el-button type="primary">保存</el-button>
           <el-button>撤销</el-button>
@@ -73,12 +98,28 @@
         </span>
       </template>
     </el-dialog>
+    <!-- 编辑权限弹出框 -->
+    <el-dialog
+      v-model="PermissionsShow"
+      :title="PermissionsOperation + '权限'"
+      width="30%"
+    >
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="PermissionsShow = false">取消</el-button>
+          <el-button type="primary" @click="PermissionsShow = false"
+            >确认</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 import { getGroups, postGroup, deletGroup } from "@/api/system";
+import { getPermissions } from "@/api/system";
 import { message } from "@/utils/message";
 import { Icon } from "@iconify/vue";
 import { ElMessageBox } from "element-plus";
@@ -102,35 +143,20 @@ const newgroup = ref({
 
 const addGroupShow = ref(false);
 
-interface Option {
-  key: number;
-  label: string;
-  disabled: boolean;
-}
+const permissionsData = ref([]);
+const permissionsValue = ref([]);
 
-const generateData = () => {
-  const data: Option[] = [];
-  for (let i = 1; i <= 15; i++) {
-    data.push({
-      key: i,
-      label: `Option ${i}`,
-      disabled: i % 4 === 0
-    });
-  }
-  return data;
-};
+const PermissionsShow = ref(false);
+const PermissionsOperation = ref("");
 
-const data = ref<Option[]>(generateData());
-const value = ref([]);
-
-// 对象选择赋值函数
+// 角色选择赋值函数
 const selectChange = () => {
   groupSelectShow.value = groupList.value.find(
     group => group.id === groupSelect.value
   );
 };
 
-// 获取对象列表函数
+// 获取角色列表函数
 const getGroupsData = () => {
   getGroups()
     .then(data => {
@@ -141,7 +167,7 @@ const getGroupsData = () => {
     .catch(error => {});
 };
 
-// 增加对象列表
+// 增加角色
 const addGroup = () => {
   if (newgroup.value.name != "") {
     postGroup(newgroup.value)
@@ -161,7 +187,7 @@ const addGroup = () => {
   }
 };
 
-// 删除对象列表
+// 删除角色
 const deleteGroup = item => {
   ElMessageBox.confirm(
     "该操作将同时删除该角色已配置权限信息，是否确认删除",
@@ -184,8 +210,27 @@ const deleteGroup = item => {
   });
 };
 
+// 获取权限列表
+const getPermissionsData = () => {
+  getPermissions()
+    .then(data => {
+      console.log(data);
+      // 将data.data转换为el-transfer组件需要的格式
+      const newData = data.data.map(item => {
+        return {
+          key: item.id,
+          label: item.name,
+          disabled: false
+        };
+      });
+      permissionsData.value = newData;
+    })
+    .catch(error => {});
+};
+
 onMounted(() => {
   getGroupsData();
+  getPermissionsData();
 });
 </script>
 
@@ -204,7 +249,7 @@ onMounted(() => {
   padding: 5px;
   margin-top: 10px;
   height: 300px !important;
-  width: 250px;
+  width: 200px;
   border-radius: 5px;
   height: 100%;
   box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
@@ -240,7 +285,7 @@ onMounted(() => {
 
 .el-transfer :deep().el-transfer-panel {
   /* border-radius: 10px; */
-  width: 300px;
+  width: 400px;
 }
 
 .el-transfer :deep().el-transfer__buttons {
@@ -268,6 +313,17 @@ onMounted(() => {
 .el-transfer :deep().el-checkbox {
   --el-checkbox-font-size: 16px;
   --el-text-color-regular: #575757;
+}
+
+.option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transfer-footer {
+  margin-left: 15px;
+  padding: 6px 5px;
 }
 
 .buttom {

@@ -37,5 +37,6 @@
     "v-perms",
     "v-ripple"
   ],
-  "vscodeCustomCodeColor.highlightValueColor": "#b392f0"
+  "vscodeCustomCodeColor.highlightValueColor": "#b392f0",
+  "prettier.printWidth": 200
 }
