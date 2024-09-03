@@ -3,9 +3,10 @@ from .serializers import GroupSerializer
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth.models import Group
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from utils.viewset import CustomModelViewSet
 
 
-class GroupViewSet(ModelViewSet):
+class GroupViewSet(CustomModelViewSet):
     """权限表管理试图"""
     queryset = Group.objects.all()
     serializer_class = GroupSerializer

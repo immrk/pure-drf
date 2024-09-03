@@ -4,6 +4,7 @@ from rest_framework import status
 from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
+from utils.response import CustomResponse
 
 
 class CustomTokenRefreshView(TokenRefreshView):
@@ -26,24 +27,13 @@ class CustomTokenRefreshView(TokenRefreshView):
             expiration_time = current_time + \
                 access_token_lifetime + timedelta(hours=8)
             expiration_time_str = expiration_time.strftime('%Y/%m/%d %H:%M:%S')
-
-            # 自定义返回格式
-            custom_data = {
-                'success': True,
-                'data': {
+            
+            data = {
                     'accessToken': access_token,
                     'refreshToken': refresh_token,
                     'expires': expiration_time_str
                 }
-            }
+            return CustomResponse(data=data, msg="token刷新成功")
         except:
             # 处理错误响应
-            custom_data = {
-                'success': False,
-                'data': {
-                    "msg": "登录信息已失效"
-                }
-            }
-
-        # 返回自定义响应
-        return Response(custom_data, status=401)
+            return CustomResponse(success=False, msg="登录信息已失效", status=status.HTTP_401_UNAUTHORIZED)

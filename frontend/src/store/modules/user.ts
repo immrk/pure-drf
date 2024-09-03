@@ -80,6 +80,10 @@ export const useUserStore = defineStore({
             resolve(data);
           })
           .catch(error => {
+            const errorMessage = error.response.data.msg
+              ? error.response.data.msg
+              : "登录服务故障";
+            message(errorMessage, { type: "error" });
             reject(error);
           });
       });
@@ -108,8 +112,8 @@ export const useUserStore = defineStore({
           .catch(error => {
             reject(error);
             // 更新错误时，则提示登录失效并跳转登录页面
-            const errorMessage = error.response.data.data.msg
-              ? error.response.data.data.msg
+            const errorMessage = error.response.data.msg
+              ? error.response.data.msg
               : "更新登陆状态错误";
             message(errorMessage, { type: "error" });
             removeToken();

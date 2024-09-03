@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import get_user_model, authenticate, login
+from django.contrib.auth import get_user_model, authenticate
 from .serializers import UserSerializer, LoginSerializer
 from utils.pagination import (
     CustomPageNumberPagination,
@@ -12,6 +12,7 @@ from utils.pagination import (
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
+from utils.response import CustomResponse
 
 User = get_user_model()
 
@@ -80,10 +81,7 @@ class LoginView(APIView):
                     '%Y/%m/%d %H:%M:%S')
                 # 序列化user数据
                 userdata = UserSerializer(user).data
-                return Response(
-                    {
-                        "success": True,
-                        "data": {
+                data = {
                             "avatar": userdata["avatar"],
                             "username": userdata["username"],
                             "nickname": userdata["nickname"],
@@ -92,20 +90,16 @@ class LoginView(APIView):
                             "refreshToken": str(refresh),
                             "accessToken": str(refresh.access_token),
                             "expires": expiration_time_str
-                        },
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            return Response(
-                {"msg": "登录信息错误"}, status=status.HTTP_401_UNAUTHORIZED
-            )
+                        }
+                return CustomResponse(data=data, msg="登陆成功")
+            
+            return CustomResponse(success=False, msg="登录信息错误", status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AsyncRoutesView(APIView):
     """动态路由视图"""
-    permission_classes = [AllowAny]
-    authentication_classes = []  # 该接口不需要鉴权
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         # 模拟动态生成的路由数据

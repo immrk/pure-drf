@@ -20,6 +20,7 @@ export type UserResult = {
     /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
   };
+  msg: string;
 };
 
 export type UserListResult = {
@@ -44,6 +45,7 @@ export type UserListResult = {
       expires: Date;
     }
   ];
+  msg: string;
 };
 
 export type RefreshTokenResult = {
@@ -56,11 +58,12 @@ export type RefreshTokenResult = {
     /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
   };
+  msg: string;
 };
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  return http.request<UserResult>("post", "api/user/login/", { data });
+  return http.request<UserResult>("post", "/api/user/login/", { data });
 };
 
 /** 刷新`token` */
@@ -72,5 +75,5 @@ export const refreshTokenApi = (data?: object) => {
 
 /** 获取用户数据列表 */
 export const getUserList = () => {
-  return http.request<UserListResult>("get", "api/user/");
+  return http.request<UserListResult>("get", "/api/user/");
 };
