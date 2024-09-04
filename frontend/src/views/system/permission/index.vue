@@ -18,26 +18,12 @@
         </template>
         <!-- 侧边栏：群组管理 -->
         <div>
-          <el-input
-            v-model="groupSelectShow.name"
-            placeholder="请选择群组"
-            :disabled="true"
-          />
+          <el-input v-model="groupSelectShow.name" placeholder="请选择群组" :disabled="true" />
           <div class="selector">
             <div v-for="item in groupList" :key="item.id">
               <div class="selectitem">
-                <el-radio
-                  v-model="groupSelect"
-                  :value="item.id"
-                  size="large"
-                  @change="selectChange"
-                  >{{ item.name }}</el-radio
-                >
-                <Icon
-                  icon="material-symbols:delete-outline"
-                  class="deleteIcon"
-                  @click="deleteGroup(item)"
-                />
+                <el-radio v-model="groupSelect" :value="item.id" size="large" @change="selectChange">{{ item.name }}</el-radio>
+                <Icon icon="material-symbols:delete-outline" class="deleteIcon" @click="deleteGroup(item)" />
               </div>
             </div>
           </div>
@@ -49,29 +35,16 @@
             <span>权限配置</span>
           </div>
         </template>
-        <el-transfer
-          v-model="permissionsValue"
-          :data="permissionsData"
-          :titles="['可选权限', '已选权限']"
-        >
+        <el-transfer v-model="permissionsValue" :data="permissionsData" :titles="['可选权限', '已选权限']">
           <!-- 自定义option样式 -->
           <template #default="{ option }">
             <div class="option_custom">
-              <Icon
-                icon="lucide:edit"
-                class="deleteIcon"
-                @click="openPermissions('编辑', option.key)"
-              />
+              <Icon icon="lucide:edit" class="deleteIcon" @click="openPermissions('编辑', option.key)" />
               <p>{{ option.label }}</p>
             </div>
           </template>
           <template #left-footer>
-            <el-button
-              class="transfer-footer"
-              size="small"
-              @click="openPermissions('新增', 0)"
-              >新增权限</el-button
-            >
+            <el-button class="transfer-footer" size="small" @click="openPermissions('新增', 0)">新增权限</el-button>
           </template>
         </el-transfer>
         <div class="buttom">
@@ -81,11 +54,8 @@
       </el-card>
     </div>
     <!-- 新增群组弹出框 -->
-    <el-dialog v-model="addGroupShow" title="新增角色" width="30%">
-      <el-input
-        v-model="newgroup.name"
-        placeholder="请输入需要新增的群组名称"
-      />
+    <el-dialog v-model="addGroupShow" title="新增角色" width="40%">
+      <el-input v-model="newgroup.name" placeholder="请输入需要新增的群组名称" />
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="addGroupShow = false">取消</el-button>
@@ -94,18 +64,25 @@
       </template>
     </el-dialog>
     <!-- 编辑权限弹出框 -->
-    <el-dialog
-      v-model="PermissionsShow"
-      :title="PermissionsOperation + '权限'"
-      width="30%"
-      @open="getSelectPermission"
-    >
+    <el-dialog v-model="PermissionsShow" :title="PermissionsOperation + '权限'" width="40%" @open="getSelectPermission">
+      <el-form label-position="right" label-width="100px" :model="editPermissionData" style="max-width: 460px">
+        <el-form-item label="ID">
+          <el-input v-model="editPermissionData.id" :disabled="true" />
+        </el-form-item>
+        <el-form-item label="分类">
+          <el-input v-model="editPermissionData.content_type_id" />
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input v-model="editPermissionData.name" />
+        </el-form-item>
+        <el-form-item label="CodeName">
+          <el-input v-model="editPermissionData.codename" />
+        </el-form-item>
+      </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="PermissionsShow = false">取消</el-button>
-          <el-button type="primary" @click="PermissionsShow = false"
-            >确认</el-button
-          >
+          <el-button type="primary" @click="PermissionsShow = false">确认</el-button>
         </span>
       </template>
     </el-dialog>
@@ -146,13 +123,16 @@ const permissionsValue = ref([]);
 const PermissionsShow = ref(false);
 const PermissionsOperation = ref("");
 const editPermissionId = ref(0);
-const editPermissionData = ref({});
+const editPermissionData = ref({
+  id: null,
+  content_type_id: null,
+  name: null,
+  codename: null
+});
 
 // 角色选择赋值函数
 const selectChange = () => {
-  groupSelectShow.value = groupList.value.find(
-    group => group.id === groupSelect.value
-  );
+  groupSelectShow.value = groupList.value.find(group => group.id === groupSelect.value);
 };
 
 // 获取角色列表函数
@@ -176,9 +156,7 @@ const addGroup = () => {
         addGroupShow.value = false;
       })
       .catch(error => {
-        const errorMessage = error.response.data.msg
-          ? error.response.data.msg
-          : "新增失败";
+        const errorMessage = error.response.data.msg ? error.response.data.msg : "新增失败";
         message(errorMessage, { type: "error" });
       });
   } else {
@@ -188,22 +166,16 @@ const addGroup = () => {
 
 // 删除角色
 const deleteGroup = item => {
-  ElMessageBox.confirm(
-    "该操作将同时删除该角色已配置权限信息，是否确认删除",
-    "警告",
-    {
-      confirmButtonText: "确认删除"
-    }
-  ).then(() => {
+  ElMessageBox.confirm("该操作将同时删除该角色已配置权限信息，是否确认删除", "警告", {
+    confirmButtonText: "确认删除"
+  }).then(() => {
     deletGroup(item.id)
       .then(data => {
         message("删除成功", { type: "success" });
         getGroupsData();
       })
       .catch(error => {
-        const errorMessage = error.response.data.msg
-          ? error.response.data.msg
-          : "删除失败";
+        const errorMessage = error.response.data.msg ? error.response.data.msg : "删除失败";
         message(errorMessage, { type: "error" });
       });
   });
@@ -238,9 +210,7 @@ const openPermissions = (operation: string, id: number) => {
 const getSelectPermission = () => {
   if (PermissionsOperation.value === "编辑") {
     // 根据id从originalPermissions里面找到对应的权限数据，并赋值给editPermissionData
-    editPermissionData.value = originalPermissions.value.find(
-      item => item.id === editPermissionId.value
-    );
+    editPermissionData.value = originalPermissions.value.find(item => item.id === editPermissionId.value);
     console.log(editPermissionData.value);
   }
 };
@@ -317,11 +287,7 @@ onMounted(() => {
   margin: 50px 0 0 0;
 }
 
-.el-transfer
-  :deep().el-transfer-panel
-  .el-transfer-panel__header
-  .el-checkbox
-  .el-checkbox__label {
+.el-transfer :deep().el-transfer-panel .el-transfer-panel__header .el-checkbox .el-checkbox__label {
   color: #575757;
   font-size: 13px;
   font-weight: normal;

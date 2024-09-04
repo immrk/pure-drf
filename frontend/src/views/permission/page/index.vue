@@ -25,9 +25,7 @@ const email = ref(useUserStoreHook()?.email);
       <template #header>
         <div class="card-header">
           <span>页面权限与菜单配置</span>
-          <el-button type="primary" style="margin-left: 10px">
-            新增页面
-          </el-button>
+          <el-button type="primary" style="margin-left: 10px"> 新增页面 </el-button>
         </div>
       </template>
     </el-card>
