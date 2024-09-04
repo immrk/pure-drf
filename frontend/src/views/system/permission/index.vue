@@ -54,27 +54,22 @@
           :data="permissionsData"
           :titles="['可选权限', '已选权限']"
         >
-          <template v-slot="{ option }">
-            <span class="option">
-              {{ option.label }}
+          <!-- 自定义option样式 -->
+          <template #default="{ option }">
+            <div class="option_custom">
               <Icon
                 icon="lucide:edit"
                 class="deleteIcon"
-                @click="
-                  PermissionsShow = true;
-                  PermissionsOperation = '编辑';
-                "
+                @click="openPermissions('编辑', option.key)"
               />
-            </span>
+              <p>{{ option.label }}</p>
+            </div>
           </template>
           <template #left-footer>
             <el-button
               class="transfer-footer"
               size="small"
-              @click="
-                PermissionsShow = true;
-                PermissionsOperation = '新增';
-              "
+              @click="openPermissions('新增', 0)"
               >新增权限</el-button
             >
           </template>
@@ -103,6 +98,7 @@
       v-model="PermissionsShow"
       :title="PermissionsOperation + '权限'"
       width="30%"
+      @open="getSelectPermission"
     >
       <template #footer>
         <span class="dialog-footer">
@@ -143,11 +139,14 @@ const newgroup = ref({
 
 const addGroupShow = ref(false);
 
+const originalPermissions = ref([]);
 const permissionsData = ref([]);
 const permissionsValue = ref([]);
 
 const PermissionsShow = ref(false);
 const PermissionsOperation = ref("");
+const editPermissionId = ref(0);
+const editPermissionData = ref({});
 
 // 角色选择赋值函数
 const selectChange = () => {
@@ -210,13 +209,13 @@ const deleteGroup = item => {
   });
 };
 
-// 获取权限列表
+// 获取可选权限列表
 const getPermissionsData = () => {
   getPermissions()
     .then(data => {
-      console.log(data);
+      originalPermissions.value = data.data;
       // 将data.data转换为el-transfer组件需要的格式
-      const newData = data.data.map(item => {
+      const newData = originalPermissions.value.map(item => {
         return {
           key: item.id,
           label: item.name,
@@ -226,6 +225,24 @@ const getPermissionsData = () => {
       permissionsData.value = newData;
     })
     .catch(error => {});
+};
+
+// 权限新建/编辑弹窗打开函数(根据传入值判断)
+const openPermissions = (operation: string, id: number) => {
+  PermissionsOperation.value = operation;
+  editPermissionId.value = id;
+  PermissionsShow.value = true;
+};
+
+// 打开权限弹窗时的事件
+const getSelectPermission = () => {
+  if (PermissionsOperation.value === "编辑") {
+    // 根据id从originalPermissions里面找到对应的权限数据，并赋值给editPermissionData
+    editPermissionData.value = originalPermissions.value.find(
+      item => item.id === editPermissionId.value
+    );
+    console.log(editPermissionData.value);
+  }
 };
 
 onMounted(() => {
@@ -315,9 +332,9 @@ onMounted(() => {
   --el-text-color-regular: #575757;
 }
 
-.option {
+.option_custom {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
   align-items: center;
 }
 
