@@ -22,7 +22,7 @@ export default {
       name: "permissionManage",
       component: () => import("@/views/system/permission/index.vue"),
       meta: {
-        title: "权限管理",
+        title: "菜单权限",
         keepAlive: true
       }
     }
