@@ -11,7 +11,7 @@ export default {
     {
       path: "/system/usermanage",
       name: "usermanage",
-      component: () => import("@/views/system/index.vue"),
+      component: () => import("@/views/system/user/index.vue"),
       meta: {
         title: "用户管理",
         keepAlive: true
