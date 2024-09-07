@@ -80,7 +80,7 @@ class LoginView(APIView):
                 expiration_time_str = expiration_time.strftime("%Y/%m/%d %H:%M:%S")
                 # 序列化user数据
                 userdata = UserSerializer(user).data
-                data = {"avatar": userdata["avatar"], "username": userdata["username"], "nickname": userdata["nickname"], "roles": ["admin"], "permissions": ["*:*:*"], "refreshToken": str(refresh), "accessToken": str(refresh.access_token), "expires": expiration_time_str}
+                data = {"avatar": userdata["avatar"], "username": userdata["username"], "roles": ["admin"], "permissions": ["*:*:*"], "refreshToken": str(refresh), "accessToken": str(refresh.access_token), "expires": expiration_time_str}
                 return CustomResponse(data=data, msg="登陆成功")
 
             return CustomResponse(success=False, msg="登录信息错误", status=status.HTTP_401_UNAUTHORIZED)
