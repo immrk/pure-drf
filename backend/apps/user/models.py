@@ -37,9 +37,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=100, unique=False, default=None, null=True)
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
+    status = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    create_time = models.DateTimeField(auto_now_add=True)
     role = models.ManyToManyField("system.Role", verbose_name=("角色"), blank=True)
     dept = models.ForeignKey(to="system.DeptInfo", verbose_name=("部门"), on_delete=models.PROTECT, blank=True, null=True)
 

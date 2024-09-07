@@ -1,19 +1,19 @@
 <template>
-  <div :class="['flex', 'justify-between', deviceDetection() && 'flex-wrap']">
-    <tree ref="treeRef" :class="['mr-2', deviceDetection() ? 'w-full' : 'min-w-[200px]']" :treeData="treeData" :treeLoading="treeLoading" @tree-select="onTreeSelect" />
-    <div :class="[deviceDetection() ? ['w-full', 'mt-2'] : 'w-[calc(100%-200px)]']">
+  <div class="maincontent">
+    <tree ref="treeRef" class="left" :treeData="treeData" :treeLoading="treeLoading" @tree-select="onTreeSelect" />
+    <div class="right">
       <!-- 筛选搜索区域 -->
-      <el-form ref="formRef" :inline="true" :model="form" class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px] overflow-auto">
+      <el-form ref="formRef" :inline="true" :model="form" class="searchform">
         <el-form-item label="用户名称：" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名称" clearable class="!w-[180px]" />
         </el-form-item>
-        <el-form-item label="邮箱：" prop="phone">
-          <el-input v-model="form.email" placeholder="请输入手机号码" clearable class="!w-[180px]" />
+        <el-form-item label="邮箱：" prop="email">
+          <el-input v-model="form.email" placeholder="请输入邮箱" clearable class="!w-[180px]" />
         </el-form-item>
         <el-form-item label="状态：" prop="status">
           <el-select v-model="form.status" placeholder="请选择" clearable class="!w-[180px]">
-            <el-option label="已开启" value="1" />
-            <el-option label="已关闭" value="0" />
+            <el-option label="已启用" value="1" />
+            <el-option label="已禁用" value="0" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -21,91 +21,221 @@
           <el-button :icon="useRenderIcon('ri:refresh-line')" @click="resetForm(formRef)"> 重置 </el-button>
         </el-form-item>
       </el-form>
-      <!-- 用户表格区域 -->
-      <PureTableBar title="用户管理" :columns="columns" @refresh="onSearch">
-        <template #buttons>
-          <el-button type="primary" :icon="useRenderIcon('ri:add-circle-line')" @click="openDialog()"> 新增用户 </el-button>
-        </template>
-        <template v-slot="{ size, dynamicColumns }">
-          <div v-if="selectedNum > 0" v-motion-fade class="bg-[var(--el-fill-color-light)] w-full h-[46px] mb-2 pl-4 flex items-center">
-            <div class="flex-auto">
-              <span style="font-size: var(--el-font-size-base)" class="text-[rgba(42,46,54,0.5)] dark:text-[rgba(220,220,242,0.5)]"> 已选 {{ selectedNum }} 项 </span>
-              <el-button type="primary" text @click="onSelectionCancel"> 取消选择 </el-button>
-            </div>
-            <el-popconfirm title="是否确认删除?" @confirm="onbatchDel">
-              <template #reference>
-                <el-button type="danger" text class="mr-1"> 批量删除 </el-button>
-              </template>
-            </el-popconfirm>
-          </div>
-          <pure-table
-            ref="tableRef"
-            row-key="id"
-            adaptive
-            :adaptiveConfig="{ offsetBottom: 108 }"
-            align-whole="center"
-            table-layout="auto"
-            :loading="loading"
-            :size="size"
-            :data="dataList"
-            :columns="dynamicColumns"
-            :pagination="{ ...pagination, size }"
-            :header-cell-style="{
-              background: 'var(--el-fill-color-light)',
-              color: 'var(--el-text-color-primary)'
-            }"
-            @selection-change="handleSelectionChange"
-            @page-size-change="handleSizeChange"
-            @page-current-change="handleCurrentChange"
-          >
-            <template #operation="{ row }">
-              <el-button class="reset-margin" link type="primary" :size="size" :icon="useRenderIcon(EditPen)" @click="openDialog('修改', row)"> 修改 </el-button>
-              <el-popconfirm :title="`是否确认删除用户编号为${row.id}的这条数据`" @confirm="handleDelete(row)">
-                <template #reference>
-                  <el-button class="reset-margin" link type="primary" :size="size" :icon="useRenderIcon(Delete)"> 删除 </el-button>
-                </template>
-              </el-popconfirm>
-              <el-dropdown>
-                <el-button class="ml-3 mt-[2px]" link type="primary" :size="size" :icon="useRenderIcon(More)" @click="handleUpdate(row)" />
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item>
-                      <el-button :class="buttonClass" link type="primary" :size="size" :icon="useRenderIcon(Upload)" @click="handleUpload(row)"> 上传头像 </el-button>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                      <el-button :class="buttonClass" link type="primary" :size="size" :icon="useRenderIcon(Password)" @click="handleReset(row)"> 重置密码 </el-button>
-                    </el-dropdown-item>
-                    <el-dropdown-item>
-                      <el-button :class="buttonClass" link type="primary" :size="size" :icon="useRenderIcon(Role)" @click="handleRole(row)"> 分配角色 </el-button>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+      <!-- 表格数据区域 -->
+      <div ref="tableContainer" class="table">
+        <el-table :data="dataList" class="el-table" :height="tableMaxHeight">
+          <el-table-column prop="id" label="ID" align="center" />
+          <el-table-column prop="username" label="用户名称" align="center" />
+          <el-table-column prop="email" label="邮箱" align="center" />
+          <el-table-column prop="deptId" label="部门" align="center" />
+          <el-table-column prop="status" label="状态" align="center">
+            <template #default="{ row }">
+              <el-tag :type="row.status ? 'success' : 'danger'">{{ row.status ? "已启用" : "已禁用" }}</el-tag>
             </template>
-          </pure-table>
-        </template>
-      </PureTableBar>
+          </el-table-column>
+          <el-table-column label="操作" align="center" fixed="right" min-width="150px">
+            <template #header>
+              <el-button type="primary" size="small" @click="handleCreat()">新增</el-button>
+            </template>
+            <template #default="{ row }">
+              <el-button type="text" size="small" @click="handleEdit(row)">编辑</el-button>
+              <el-button type="text" size="small" @click="handleDelete(row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
+    <!-- 用户新建/编辑弹窗 -->
+    <userdialog v-model:visible="isDialogVisible" :user="selectedUser" :is-edit-mode="isEditMode" @update:visible="isDialogVisible = $event" @save="handleSave" @cancel="handleCancel" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
-import { type UserListResult, getUserList } from "@/api/user";
+import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { useUser } from "./utils/hook";
+import { deviceDetection } from "@pureadmin/utils";
+import { handleTree } from "@/utils/tree";
 import tree from "./components/tree.vue";
-import { PureTableBar } from "@/components/RePureTableBar";
-
-const treeRef = ref();
-const formRef = ref();
-const tableRef = ref();
-
-const { treeData, treeLoading, form, loading, columns, dataList, selectedNum, deviceDetection, onTreeSelect, onSearch, resetForm } = useUser(tableRef, treeRef);
+import userdialog from "./components/userdialog.vue";
+import { getUserList, putUser } from "@/api/user";
+import { message } from "@/utils/message";
 
 defineOptions({
   name: "usermanage"
 });
+
+const formRef = ref(null);
+const treeRef = ref(null);
+const treeData = ref([]);
+const treeLoading = ref(false);
+
+// 筛选过滤器数据
+const form = reactive({
+  deptId: "",
+  username: "",
+  email: "",
+  status: ""
+});
+
+// 表格数据
+const dataList = ref([]);
+const tableMaxHeight = ref(0); // 表格最大高度
+const tableContainer = ref(null); // 通过ref获取DOM元素
+const loading = ref(false);
+// 用户弹窗组件数据
+const isDialogVisible = ref(false);
+const isEditMode = ref(false);
+const selectedUser = ref({});
+// 用户弹窗组件保存操作
+const handleSave = (method, newdata) => {
+  console.log("保存用户", method, newdata);
+  // 根据method判断是新增还是编辑
+  if (method === "create") {
+    // 新增用户
+    console.log("新增用户", newdata);
+  } else {
+    // 编辑用户
+    putUser(newdata.id, newdata).then(res => {
+      message("更新成功", { type: "success" });
+      onSearch();
+    });
+  }
+};
+
+// 用户弹窗组件取消操作
+const handleCancel = () => {
+  isDialogVisible.value = false;
+};
+
+// 部门树选择事件函数
+function onTreeSelect({ id, selected }) {
+  form.deptId = selected ? id : "";
+}
+
+// 搜索数据函数
+async function onSearch() {
+  loading.value = true;
+  // 模拟获取用户数据，赋值dataList和分页
+  await getUserList().then(res => {
+    dataList.value = res.results;
+    loading.value = false;
+  });
+}
+
+// 重置表单函数
+const resetForm = formEl => {
+  if (!formEl) return;
+  formEl.resetFields();
+  form.deptId = "";
+  treeRef.value.onTreeReset();
+  onSearch();
+};
+
+// 计算表格高度的函数
+const calculateTableHeight = () => {
+  nextTick(() => {
+    if (tableContainer.value) {
+      // 获取父容器的高度
+      const parentHeight = tableContainer.value.clientHeight;
+      tableMaxHeight.value = parentHeight; // 设置表格最大高度
+    }
+  });
+};
+
+// 编辑用户点击事件函数
+function handleEdit(row) {
+  console.log("编辑用户", row);
+  selectedUser.value = row;
+  isEditMode.value = true;
+  isDialogVisible.value = true;
+}
+
+// 新增用户点击事件函数
+function handleCreat() {
+  selectedUser.value = {};
+  isEditMode.value = false;
+  isDialogVisible.value = true;
+}
+
+// 删除用户点击事件函数
+function handleDelete(row) {
+  console.log("删除用户", row);
+}
+
+onMounted(async () => {
+  // 计算表格高度的函数并挂载监听事件
+  calculateTableHeight();
+  window.addEventListener("resize", calculateTableHeight);
+  // 模拟获取部门数据
+  const data = [
+    {
+      name: "上海公司",
+      parentId: 0,
+      id: 100,
+      sort: 0,
+      type: 1 // 1 公司 2 分公司 3 部门, 用于在组件内控制icon显示
+    },
+    {
+      name: "部门1",
+      parentId: 100,
+      id: 101,
+      sort: 0,
+      type: 3 // 1 公司 2 分公司 3 部门, 用于在组件内控制icon显示
+    }
+  ];
+  treeLoading.value = true;
+  treeData.value = handleTree(data);
+  treeLoading.value = false;
+  // 搜索数据
+  onSearch();
+});
+
+// 在组件卸载前移除监听器
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", calculateTableHeight);
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+.main-content {
+  margin: 24px 24px 0 !important;
+}
+
+.maincontent {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 141px);
+}
+
+.left {
+  min-width: 200px;
+  margin-right: 10px;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.searchform {
+  background-color: var(--el-bg-color);
+  /* padding: 10px; */
+  .el-form-item {
+    margin: 10px;
+  }
+}
+
+.table {
+  flex: 1;
+  margin-top: 10px;
+  background-color: var(--el-bg-color);
+  height: 100%;
+  /* 解决element表格在flex布局下无法自适应窗口宽度缩小的问题 */
+  position: relative;
+  .el-table {
+    position: absolute;
+  }
+}
+</style>

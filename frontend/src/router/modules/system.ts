@@ -18,6 +18,24 @@ export default {
       }
     },
     {
+      path: "/system/deptmanage",
+      name: "deptmanage",
+      component: () => import("@/views/system/department/index.vue"),
+      meta: {
+        title: "部门管理",
+        keepAlive: true
+      }
+    },
+    {
+      path: "/system/rolemanage",
+      name: "rolemanage",
+      component: () => import("@/views/system/role/index.vue"),
+      meta: {
+        title: "角色管理",
+        keepAlive: true
+      }
+    },
+    {
       path: "/system/permissionManage",
       name: "permissionManage",
       component: () => import("@/views/system/permission/index.vue"),

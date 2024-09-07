@@ -9,6 +9,7 @@ class Role(UuidModel, BaseModel):
     code = models.CharField(max_length=128, verbose_name=("角色代码"), unique=True)
     is_active = models.BooleanField(verbose_name=("激活状态"), default=True)
     menu = models.ManyToManyField("system.Menu", verbose_name=("菜单"), blank=True)
+    parent = models.ForeignKey("system.Role", on_delete=models.SET_NULL, verbose_name=("父级角色"), null=True, blank=True)
 
     class Meta:
         verbose_name = "角色表"

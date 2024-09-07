@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "email", "username", "nickname", "avatar", "password", "is_active", "last_login", "dept")
+        fields = ("id", "email", "username", "nickname", "avatar", "password", "status", "last_login", "dept")
         extra_kwargs = {"password": {"write_only": True}}  # 设置密码为只写字段
 
     def create(self, validated_data):

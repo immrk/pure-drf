@@ -82,7 +82,7 @@ defineExpose({ onTreeReset });
 </script>
 
 <template>
-  <div v-loading="treeLoading" class="h-full bg-bg_color overflow-auto" :style="{ minHeight: `calc(100vh - 141px)` }">
+  <div v-loading="treeLoading" class="h-full bg-bg_color overflow-auto">
     <div class="flex items-center h-[34px]">
       <el-input v-model="searchValue" class="ml-2" size="small" placeholder="请输入部门名称" clearable>
         <template #suffix>
