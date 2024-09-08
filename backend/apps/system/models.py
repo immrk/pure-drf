@@ -8,7 +8,7 @@ class Role(UuidModel, BaseModel):
     name = models.CharField(max_length=128, verbose_name=("角色名称"), unique=True)
     code = models.CharField(max_length=128, verbose_name=("角色代码"), unique=True)
     is_active = models.BooleanField(verbose_name=("激活状态"), default=True)
-    menu = models.ManyToManyField("system.Menu", verbose_name=("菜单"), blank=True)
+    menu = models.ManyToManyField("system.Menu", verbose_name=("菜单/权限"), blank=True)
     parent = models.ForeignKey("system.Role", on_delete=models.SET_NULL, verbose_name=("父级角色"), null=True, blank=True)
 
     class Meta:
@@ -86,6 +86,7 @@ class MenuMeta(UuidModel, BaseModel):
 class DeptInfo(UuidModel, BaseModel):
     name = models.CharField(verbose_name=("Department name"), max_length=128)
     code = models.CharField(max_length=128, verbose_name=("Department code"), unique=True)
+    type = models.SmallIntegerField(verbose_name=("Department type"), default=0)
     parent = models.ForeignKey("system.DeptInfo", on_delete=models.SET_NULL, verbose_name=("Superior department"), null=True, blank=True, related_query_name="parent_query")
     roles = models.ManyToManyField("system.Role", verbose_name=("Role permission"), blank=True)
     rank = models.IntegerField(verbose_name=("Rank"), default=99)
