@@ -20,11 +20,19 @@
     </div>
     <!-- 表格数据区域 -->
     <div ref="tableContainer" class="table">
-      <el-table :data="dataList" style="width: 100%; margin-bottom: 20px" row-key="id" lazy :height="tableMaxHeight">
-        <el-table-column label="" align="center" width="30px" />
+      <el-table :data="dataList" style="width: 100%; margin-bottom: 20px" row-key="id" lazy :height="tableMaxHeight" default-expand-all>
         <el-table-column prop="id" label="部门ID" align="center" />
         <el-table-column prop="name" label="名称" align="center" />
-        <el-table-column prop="sort" label="排序" sortable align="center" />
+        <el-table-column prop="rank" label="排序" sortable align="center" />
+        <el-table-column prop="code" label="代码" align="center" />
+        <el-table-column prop="type" label="类型" align="center">
+          <template #default="{ row }">
+            <span v-if="row.type === 1">公司</span>
+            <span v-else-if="row.type === 2">分公司</span>
+            <span v-else-if="row.type === 3">部门</span>
+            <span v-else-if="row.type === 4">其他</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status ? 'success' : 'danger'">{{ row.status ? "已启用" : "已禁用" }}</el-tag>
@@ -51,6 +59,10 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { handleTree } from "@/utils/tree";
 import deptdialog from "./components/deptdialog.vue";
+import { getDepartList, postDepart, deleteDepart, patchDepart } from "@/api/system";
+import { isAllEmpty } from "@pureadmin/utils";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { message } from "@/utils/message";
 
 const formRef = ref(null);
 
@@ -89,27 +101,11 @@ const resetForm = formEl => {
 // 搜索数据函数
 async function onSearch() {
   loading.value = true;
-  // 模拟获取部门数据
-  const newData = [
-    {
-      name: "上海公司",
-      parentId: 0,
-      id: 100,
-      sort: 0,
-      type: 1, // 1 公司 2 分公司 3 部门, 用于在组件内控制icon显示
-      status: true
-    },
-    {
-      name: "部门1",
-      parentId: 100,
-      id: 101,
-      sort: 0,
-      type: 3, // 1 公司 2 分公司 3 部门, 用于在组件内控制icon显示
-      status: true
-    }
-  ];
-  dataList.value = handleTree(newData); // 处理列表成树形数据
-  loading.value = false;
+  // 获取部门数据
+  await getDepartList(form).then(res => {
+    dataList.value = handleTree(res.data, "id", "parent", "children"); // 处理列表成树形数据
+    loading.value = false;
+  });
 }
 
 // 编辑用户点击事件函数
@@ -123,26 +119,90 @@ function handleEdit(row) {
 // 新增用户点击事件函数
 function handleCreat() {
   console.log("新增部门");
-  selectedDept.value = {};
+  // 新增部门默认值
+  selectedDept.value = {
+    name: "",
+    code: "",
+    type: 3,
+    rank: 0,
+    status: true,
+    parent: ""
+  };
   isEditMode.value = false;
   isDialogVisible.value = true;
 }
 
 // 删除用户点击事件函数
 function handleDelete(row) {
-  console.log("删除用户", row);
+  ElMessageBox.confirm("部门：" + row.name + " 将被永久删除，请谨慎操作！", "警告", {
+    confirmButtonText: "确认删除",
+    cancelButtonText: "取消",
+    type: "warning"
+  })
+    .then(() => {
+      console.log("删除部门", row);
+      deleteDepart(row.id)
+        .then(res => {
+          onSearch();
+          message(res.msg, { type: "success" });
+        })
+        .catch(res => {
+          message(res.msg, { type: "error" });
+        });
+    })
+    .catch(() => {
+      console.log("删除部门", "已取消");
+    });
 }
 
 // 弹窗相关
 const isDialogVisible = ref(false);
 const isEditMode = ref(false);
 const selectedDept = ref({});
-const handleSave = (type, data) => {
-  console.log("保存", type, data);
-};
-const handleCancel = () => {
+
+// 编辑/新增 部门 数据过滤函数
+function deptFilter(data) {
+  delete data.id;
+  delete data.children;
+  // 上传时剔除空值字段
+  data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
+  // 若存在parent，则提取最后一个元素(element组件会默认携带列表)
+  if (data.parent && Array.isArray(data.parent)) {
+    data.parent = data.parent[data.parent.length - 1];
+  }
+  return data;
+}
+
+function handleSave(type, data) {
+  if (type == "update") {
+    const id = data.id;
+    const newdata = deptFilter(data);
+    console.log(newdata);
+    patchDepart(id, newdata)
+      .then(res => {
+        onSearch();
+        message(res.msg, { type: "success" });
+      })
+      .catch(res => {
+        message(res.msg, { type: "error" });
+      });
+  } else if (type == "create") {
+    const newdata = deptFilter(data);
+    console.log(newdata);
+    postDepart(newdata)
+      .then(res => {
+        onSearch();
+        message(res.msg, { type: "success" });
+      })
+      .catch(res => {
+        message(res.msg, { type: "error" });
+      });
+  }
+}
+
+function handleCancel() {
   console.log("取消");
-};
+}
 
 onMounted(() => {
   // 计算表格高度的函数并挂载监听事件
@@ -159,6 +219,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+::v-deep(.el-table .cell) {
+  overflow: hidden; // 溢出隐藏
+  text-overflow: ellipsis; // 溢出用省略号显示
+  white-space: nowrap; // 规定段落中的文本不进行换行
+}
+
 .main-content {
   margin: 24px 24px 0 !important;
 }

@@ -42,7 +42,7 @@ class CustomModelViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        return CustomResponse(success=True, data=None, msg="成功删除", status=status.HTTP_204_NO_CONTENT)
+        return CustomResponse(success=True, data=None, msg="成功删除", status=status.HTTP_200_OK)
 
     def handle_exception(self, exc):
         """

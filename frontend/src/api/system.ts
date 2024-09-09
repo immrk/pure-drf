@@ -1,62 +1,44 @@
 import { http } from "@/utils/http";
-
-// group数据列表type
-export type GroupResult = {
+// depart数据列表type
+export type DepartResult = {
   success: boolean;
-  data: [
-    {
-      id: number;
-      name: string;
-    }
-  ];
+  data: [];
   msg: string;
 };
 
-export type Group = {
-  id: number;
+export type Depart = {
+  id: string;
   name: string;
+  code: string;
+  rank: number;
+  type: number;
+  parent: string;
+  status: boolean;
+  roles: [];
 };
 
-// permissions数据列表type
-export type PermissionResult = {
+export type newDepartResult = {
   success: boolean;
-  data: [
-    {
-      id: number;
-      content_type_id: number;
-      name: string;
-      codename: string;
-    }
-  ];
+  data: object;
   msg: string;
 };
 
-// group数据列表type
-export type Permission = {
-  id: number;
-  content_type_id: number;
-  name: string;
-  codename: string;
+/** 获取部门数据列表 */
+export const getDepartList = (params?: object) => {
+  return http.request<DepartResult>("get", "/api/system/dept/", { params });
 };
 
-// group接口
-export const getGroups = () => {
-  return http.request<GroupResult>("get", "api/system/groups/");
+/** 新增部门 */
+export const postDepart = (data?: object) => {
+  return http.request<newDepartResult>("post", "/api/system/dept/", { data });
 };
 
-export const postGroup = (data?: object) => {
-  return http.request<Group>("post", "api/system/groups/", { data });
+/** 删除部门 */
+export const deleteDepart = (id?: number) => {
+  return http.request<newDepartResult>("delete", "/api/system/dept/" + id + "/");
 };
 
-export const deletGroup = (id?: number) => {
-  return http.request("delete", "api/system/groups/" + id + "/");
-};
-
-// permission接口
-export const getPermissions = () => {
-  return http.request<PermissionResult>("get", "api/system/permissions/");
-};
-
-export const putPermissions = (id?: number, data?: object) => {
-  return http.request<Permission>("put", "api/system/permissions/" + id + "/", { data });
+/** 部分更新部门数据 */
+export const patchDepart = (id?: number, data?: object) => {
+  return http.request<newDepartResult>("patch", "/api/system/dept/" + id + "/", { data });
 };

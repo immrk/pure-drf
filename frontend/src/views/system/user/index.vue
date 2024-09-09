@@ -53,11 +53,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { deviceDetection } from "@pureadmin/utils";
+import { isAllEmpty } from "@pureadmin/utils";
 import { handleTree } from "@/utils/tree";
 import tree from "./components/tree.vue";
 import userdialog from "./components/userdialog.vue";
 import { getUserList, putUser } from "@/api/user";
+import { getDepartList } from "@/api/system";
 import { message } from "@/utils/message";
 
 defineOptions({
@@ -71,7 +72,7 @@ const treeLoading = ref(false);
 
 // 筛选过滤器数据
 const form = reactive({
-  deptId: "",
+  dept_id: "",
   username: "",
   email: "",
   status: ""
@@ -86,19 +87,35 @@ const loading = ref(false);
 const isDialogVisible = ref(false);
 const isEditMode = ref(false);
 const selectedUser = ref({});
+
+// 编辑/新增 部门 数据过滤函数
+function userFilter(data) {
+  delete data.id;
+  // 上传时剔除空值字段
+  data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
+  // 若存在dept_id，则提取最后一个元素(element组件会默认携带列表)
+  if (data.dept_id && Array.isArray(data.dept_id)) {
+    data.dept_id = data.dept_id[data.dept_id.length - 1];
+  }
+  return data;
+}
+
 // 用户弹窗组件保存操作
-const handleSave = (method, newdata) => {
-  console.log("保存用户", method, newdata);
+const handleSave = (method, data) => {
   // 根据method判断是新增还是编辑
   if (method === "create") {
-    // 新增用户
-    console.log("新增用户", newdata);
+    const id = data.id;
+    const newdata = userFilter(data);
+    console.log("新增用户", method, newdata);
   } else {
     // 编辑用户
-    putUser(newdata.id, newdata).then(res => {
-      message("更新成功", { type: "success" });
-      onSearch();
-    });
+    const id = data.id;
+    const newdata = userFilter(data);
+    console.log("更新用户", method, newdata);
+    // putUser(newdata.id, newdata).then(res => {
+    //   message("更新成功", { type: "success" });
+    //   onSearch();
+    // });
   }
 };
 
@@ -109,14 +126,15 @@ const handleCancel = () => {
 
 // 部门树选择事件函数
 function onTreeSelect({ id, selected }) {
-  form.deptId = selected ? id : "";
+  form.dept_id = selected ? id : "";
+  onSearch();
 }
 
 // 搜索数据函数
 async function onSearch() {
   loading.value = true;
-  // 模拟获取用户数据，赋值dataList和分页
-  await getUserList().then(res => {
+  // 获取用户数据，赋值dataList和分页
+  await getUserList(form).then(res => {
     dataList.value = res.results;
     loading.value = false;
   });
@@ -126,7 +144,7 @@ async function onSearch() {
 const resetForm = formEl => {
   if (!formEl) return;
   formEl.resetFields();
-  form.deptId = "";
+  form.dept_id = "";
   treeRef.value.onTreeReset();
   onSearch();
 };
@@ -167,25 +185,12 @@ onMounted(async () => {
   calculateTableHeight();
   window.addEventListener("resize", calculateTableHeight);
   // 模拟获取部门数据
-  const data = [
-    {
-      name: "上海公司",
-      parentId: 0,
-      id: 100,
-      sort: 0,
-      type: 1 // 1 公司 2 分公司 3 部门, 用于在组件内控制icon显示
-    },
-    {
-      name: "部门1",
-      parentId: 100,
-      id: 101,
-      sort: 0,
-      type: 3 // 1 公司 2 分公司 3 部门, 用于在组件内控制icon显示
-    }
-  ];
   treeLoading.value = true;
-  treeData.value = handleTree(data);
-  treeLoading.value = false;
+  await getDepartList().then(res => {
+    treeData.value = handleTree(res.data, "id", "parent", "children"); // 处理列表成树形数据
+    loading.value = false;
+    treeLoading.value = false;
+  });
   // 搜索数据
   onSearch();
 });

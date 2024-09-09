@@ -7,7 +7,7 @@ import json
 class Role(UuidModel, BaseModel):
     name = models.CharField(max_length=128, verbose_name=("角色名称"), unique=True)
     code = models.CharField(max_length=128, verbose_name=("角色代码"), unique=True)
-    is_active = models.BooleanField(verbose_name=("激活状态"), default=True)
+    status = models.BooleanField(verbose_name=("激活状态"), default=True)
     menu = models.ManyToManyField("system.Menu", verbose_name=("菜单/权限"), blank=True)
     parent = models.ForeignKey("system.Role", on_delete=models.SET_NULL, verbose_name=("父级角色"), null=True, blank=True)
 
@@ -39,7 +39,7 @@ class Menu(UuidModel, BaseModel):
     rank = models.IntegerField(verbose_name=("优先级"), default=9999)
     path = models.CharField(verbose_name=("路由地址/api地址"), max_length=255)
     component = models.CharField(verbose_name=("组件地址"), max_length=255, null=True, blank=True)
-    is_active = models.BooleanField(verbose_name=("激活"), default=True)
+    status = models.BooleanField(verbose_name=("激活"), default=True)
     meta = models.OneToOneField("system.MenuMeta", on_delete=models.CASCADE, verbose_name=("Menu meta"))
     method = models.CharField(choices=MethodChoices.choices, null=True, blank=True, verbose_name=("Method"), max_length=10)
 
@@ -91,7 +91,7 @@ class DeptInfo(UuidModel, BaseModel):
     roles = models.ManyToManyField("system.Role", verbose_name=("Role permission"), blank=True)
     rank = models.IntegerField(verbose_name=("Rank"), default=99)
     auto_bind = models.BooleanField(verbose_name=("Auto bind"), default=False, help_text=("If the value of the registration parameter channel is consistent with the department code, the user is automatically bound to the department"))
-    is_active = models.BooleanField(verbose_name=("Is active"), default=True)
+    status = models.BooleanField(verbose_name=("Is active"), default=True)
 
     @classmethod
     def recursion_dept_info(cls, dept_id: int, dept_all_list=None, dept_list=None, is_parent=False):

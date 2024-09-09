@@ -2,6 +2,8 @@ from .serializers import RoleSerializer, MenuSerializer, MenuMetaSerializer, Dep
 from .models import Role, Menu, MenuMeta, DeptInfo
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from utils.viewset import CustomModelViewSet
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import DeptFilter
 
 
 class RoleViewSet(CustomModelViewSet):
@@ -30,3 +32,5 @@ class DeptInfoViewSet(CustomModelViewSet):
 
     queryset = DeptInfo.objects.all()
     serializer_class = DeptInfoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DeptFilter

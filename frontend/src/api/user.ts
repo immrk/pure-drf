@@ -54,8 +54,8 @@ export const refreshTokenApi = (data?: object) => {
 };
 
 /** 获取用户数据列表 */
-export const getUserList = () => {
-  return http.request<UserListResult>("get", "/api/user/");
+export const getUserList = (params?: object) => {
+  return http.request<UserListResult>("get", "/api/user/", { params });
 };
 
 /** 更新用户数据 */

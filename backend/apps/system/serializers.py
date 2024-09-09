@@ -10,7 +10,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
-        fields = ["id", "name", "code", "is_active", "menu", "parent"]
+        fields = ["id", "name", "code", "status", "menu", "parent"]
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "parent", "menu_type", "name", "rank", "path", "component", "is_active", "meta", "method"]
+        fields = ["id", "parent", "menu_type", "name", "rank", "path", "component", "status", "meta", "method"]
 
 
 class MenuMetaSerializer(serializers.ModelSerializer):
@@ -40,4 +40,4 @@ class DeptInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeptInfo
-        fields = ["id", "name", "code", "rank", "type", "parent", "is_active", "roles", "parent"]
+        fields = ["id", "name", "code", "rank", "type", "parent", "status", "roles", "parent"]

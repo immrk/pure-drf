@@ -13,6 +13,8 @@ from utils.pagination import (
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from utils.response import CustomResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import UserFilter
 
 User = get_user_model()
 
@@ -24,6 +26,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserFilter
     pagination_class = CustomPageNumberPagination
 
     def get_permissions(self):
