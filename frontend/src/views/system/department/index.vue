@@ -147,7 +147,7 @@ function handleDelete(row) {
           message(res.msg, { type: "success" });
         })
         .catch(res => {
-          message(res.msg, { type: "error" });
+          message(JSON.stringify(res.response.data.msg), { type: "error" });
         });
     })
     .catch(() => {
@@ -184,7 +184,7 @@ function handleSave(type, data) {
         message(res.msg, { type: "success" });
       })
       .catch(res => {
-        message(res.msg, { type: "error" });
+        message(JSON.stringify(res.response.data.msg), { type: "error" });
       });
   } else if (type == "create") {
     const newdata = deptFilter(data);
@@ -195,7 +195,7 @@ function handleSave(type, data) {
         message(res.msg, { type: "success" });
       })
       .catch(res => {
-        message(res.msg, { type: "error" });
+        message(JSON.stringify(res.response.data.msg), { type: "error" });
       });
   }
 }

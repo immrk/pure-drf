@@ -24,8 +24,11 @@ export type UserResult = {
 
 export type UserListResult = {
   success: boolean;
-  results: Array<object>;
+  data: Array<object>;
   msg: string;
+  total: number;
+  page: number;
+  limit: number;
 };
 
 export type RefreshTokenResult = {
@@ -59,6 +62,16 @@ export const getUserList = (params?: object) => {
 };
 
 /** 更新用户数据 */
-export const putUser = (id?: number, data?: object) => {
-  return http.request("put", "/api/user/" + id + "/", { data });
+export const patchUser = (id?: number, data?: object) => {
+  return http.request<UserResult>("patch", "/api/user/" + id + "/", { data });
+};
+
+/** 新增用户数据 */
+export const postUser = (data?: object) => {
+  return http.request<UserResult>("post", "/api/user/", { data });
+};
+
+/** 删除用户数据 */
+export const deleteUser = (id?: number) => {
+  return http.request<UserResult>("delete", "/api/user/" + id + "/");
 };

@@ -26,8 +26,10 @@
         <el-table :data="dataList" class="el-table" :height="tableMaxHeight">
           <el-table-column prop="id" label="ID" align="center" />
           <el-table-column prop="username" label="用户名称" align="center" />
+          <el-table-column prop="nickname" label="昵称" align="center" />
+          <el-table-column prop="dept_name" label="部门" align="center" />
+          <el-table-column prop="role_name" label="角色" align="center" />
           <el-table-column prop="email" label="邮箱" align="center" />
-          <el-table-column prop="deptId" label="部门" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="{ row }">
               <el-tag :type="row.status ? 'success' : 'danger'">{{ row.status ? "已启用" : "已禁用" }}</el-tag>
@@ -43,10 +45,11 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination v-model:current-page="form.page" v-model:page-size="form.size" :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
       </div>
     </div>
     <!-- 用户新建/编辑弹窗 -->
-    <userdialog v-model:visible="isDialogVisible" :user="selectedUser" :is-edit-mode="isEditMode" @update:visible="isDialogVisible = $event" @save="handleSave" @cancel="handleCancel" />
+    <userdialog v-model:visible="isDialogVisible" :user="selectedUser" :is-edit-mode="isEditMode" :tree-data="treeData" @update:visible="isDialogVisible = $event" @save="handleSave" @cancel="handleCancel" />
   </div>
 </template>
 
@@ -57,9 +60,10 @@ import { isAllEmpty } from "@pureadmin/utils";
 import { handleTree } from "@/utils/tree";
 import tree from "./components/tree.vue";
 import userdialog from "./components/userdialog.vue";
-import { getUserList, putUser } from "@/api/user";
-import { getDepartList } from "@/api/system";
+import { getUserList, patchUser, postUser, deleteUser } from "@/api/user";
+import { getDepartList, getRoleList } from "@/api/system";
 import { message } from "@/utils/message";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 defineOptions({
   name: "usermanage"
@@ -72,11 +76,24 @@ const treeLoading = ref(false);
 
 // 筛选过滤器数据
 const form = reactive({
-  dept_id: "",
+  dept: "",
   username: "",
   email: "",
-  status: ""
+  status: "",
+  page: 1,
+  size: 10
 });
+const total = ref(0);
+
+function handleSizeChange(size) {
+  form.size = size;
+  onSearch();
+}
+
+function handleCurrentChange(page) {
+  form.page = page;
+  onSearch();
+}
 
 // 表格数据
 const dataList = ref([]);
@@ -88,14 +105,24 @@ const isDialogVisible = ref(false);
 const isEditMode = ref(false);
 const selectedUser = ref({});
 
-// 编辑/新增 部门 数据过滤函数
+// 编辑/新增 用户 数据过滤函数
 function userFilter(data) {
   delete data.id;
+  delete data.dept_name;
   // 上传时剔除空值字段
   data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
-  // 若存在dept_id，则提取最后一个元素(element组件会默认携带列表)
-  if (data.dept_id && Array.isArray(data.dept_id)) {
-    data.dept_id = data.dept_id[data.dept_id.length - 1];
+  // 若存在dept，则提取最后一个元素(element组件会默认携带列表)
+  if (data.dept && Array.isArray(data.dept)) {
+    data.dept = data.dept[data.dept.length - 1];
+  }
+  // 若存在role，遍历元素，将为数组的元素提取最后一个元素
+  if (data.role && Array.isArray(data.role)) {
+    data.role = data.role.map(item => {
+      if (Array.isArray(item)) {
+        return item[item.length - 1];
+      }
+      return item;
+    });
   }
   return data;
 }
@@ -104,18 +131,31 @@ function userFilter(data) {
 const handleSave = (method, data) => {
   // 根据method判断是新增还是编辑
   if (method === "create") {
-    const id = data.id;
     const newdata = userFilter(data);
     console.log("新增用户", method, newdata);
+    postUser(newdata)
+      .then(res => {
+        message(res.msg, { type: "success" });
+        onSearch();
+      })
+      .catch(res => {
+        console.log(res);
+        message(JSON.stringify(res.response.data.msg), { type: "error" });
+      });
   } else {
     // 编辑用户
     const id = data.id;
     const newdata = userFilter(data);
     console.log("更新用户", method, newdata);
-    // putUser(newdata.id, newdata).then(res => {
-    //   message("更新成功", { type: "success" });
-    //   onSearch();
-    // });
+    patchUser(id, newdata)
+      .then(res => {
+        message(res.msg, { type: "success" });
+        onSearch();
+      })
+      .catch(res => {
+        console.log(res);
+        message(JSON.stringify(res.response.data.msg), { type: "error" });
+      });
   }
 };
 
@@ -126,7 +166,7 @@ const handleCancel = () => {
 
 // 部门树选择事件函数
 function onTreeSelect({ id, selected }) {
-  form.dept_id = selected ? id : "";
+  form.dept = selected ? id : "";
   onSearch();
 }
 
@@ -135,7 +175,10 @@ async function onSearch() {
   loading.value = true;
   // 获取用户数据，赋值dataList和分页
   await getUserList(form).then(res => {
-    dataList.value = res.results;
+    dataList.value = res.data;
+    total.value = res.total;
+    form.page = res.page;
+    form.size = res.limit;
     loading.value = false;
   });
 }
@@ -144,7 +187,7 @@ async function onSearch() {
 const resetForm = formEl => {
   if (!formEl) return;
   formEl.resetFields();
-  form.dept_id = "";
+  form.dept = "";
   treeRef.value.onTreeReset();
   onSearch();
 };
@@ -155,7 +198,7 @@ const calculateTableHeight = () => {
     if (tableContainer.value) {
       // 获取父容器的高度
       const parentHeight = tableContainer.value.clientHeight;
-      tableMaxHeight.value = parentHeight; // 设置表格最大高度
+      tableMaxHeight.value = parentHeight - 50; // 设置表格最大高度
     }
   });
 };
@@ -177,14 +220,35 @@ function handleCreat() {
 
 // 删除用户点击事件函数
 function handleDelete(row) {
-  console.log("删除用户", row);
+  ElMessageBox.confirm("用户：" + row.username + " 将被永久删除，请谨慎操作！", "警告", {
+    confirmButtonText: "确认删除",
+    cancelButtonText: "取消",
+    type: "warning"
+  })
+    .then(() => {
+      console.log("删除用户", row);
+      deleteUser(row.id)
+        .then(res => {
+          message(res.msg, { type: "success" });
+          if (dataList.value.length <= 1) {
+            form.page = form.page - 1;
+          }
+          onSearch();
+        })
+        .catch(res => {
+          message(JSON.stringify(res.response.data.msg), { type: "error" });
+        });
+    })
+    .catch(() => {
+      console.log("删除用户", "已取消");
+    });
 }
 
 onMounted(async () => {
   // 计算表格高度的函数并挂载监听事件
   calculateTableHeight();
   window.addEventListener("resize", calculateTableHeight);
-  // 模拟获取部门数据
+  // 获取部门数据
   treeLoading.value = true;
   await getDepartList().then(res => {
     treeData.value = handleTree(res.data, "id", "parent", "children"); // 处理列表成树形数据
@@ -201,7 +265,13 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+::v-deep(.el-table .cell) {
+  overflow: hidden; // 溢出隐藏
+  text-overflow: ellipsis; // 溢出用省略号显示
+  white-space: nowrap; // 规定段落中的文本不进行换行
+}
+
 .main-content {
   margin: 24px 24px 0 !important;
 }
@@ -241,6 +311,14 @@ onBeforeUnmount(() => {
   position: relative;
   .el-table {
     position: absolute;
+  }
+  .el-pagination {
+    width: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    bottom: 0;
+    height: 50px;
   }
 }
 </style>

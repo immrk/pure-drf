@@ -15,11 +15,12 @@ from django.utils import timezone
 from utils.response import CustomResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import UserFilter
+from utils.viewset import CustomModelViewSet
 
 User = get_user_model()
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(CustomModelViewSet):
     """
     用户视图集，支持用户的CRUD操作
     """
@@ -41,13 +42,6 @@ class UserViewSet(viewsets.ModelViewSet):
             # 对于其他操作，要求用户认证
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
-
-    def destroy(self, request, *args, **kwargs):
-        # 重写禁用删除功能, 用户注销逻辑另写
-        return Response(
-            {"detail": "Delete operation is not allowed."},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
 
     # 自定义新方法，当使用DefaultRouter配置路由时，会自动使用函数名创建路径为 /get_self/
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
@@ -84,7 +78,7 @@ class LoginView(APIView):
                 expiration_time_str = expiration_time.strftime("%Y/%m/%d %H:%M:%S")
                 # 序列化user数据
                 userdata = UserSerializer(user).data
-                data = {"avatar": userdata["avatar"], "username": userdata["username"], "nickname": userdata["nickname"], "roles": ["admin"], "permissions": ["*:*:*"], "refreshToken": str(refresh), "accessToken": str(refresh.access_token), "expires": expiration_time_str}
+                data = {"avatar": userdata["avatar"], "username": userdata["username"], "nickname": userdata["nickname"], "role": userdata["role"], "permissions": ["*:*:*"], "refreshToken": str(refresh), "accessToken": str(refresh.access_token), "expires": expiration_time_str}
                 return CustomResponse(data=data, msg="登陆成功")
 
             return CustomResponse(success=False, msg="登录信息错误", status=status.HTTP_401_UNAUTHORIZED)
