@@ -2,13 +2,32 @@
   <el-dialog v-model="dialogVisible" :title="props.isEditMode ? '编辑菜单/权限' : '创建菜单/权限'" :width="deviceDetection() ? '90%' : '50%'" @open="handleOpen" @close="handleCancel">
     <!-- 通用表单 -->
     <el-form ref="menuForm" :model="menuData" :rules="rules" label-width="80px" label-position="left">
-      <el-form-item v-if="props.isEditMode" prop="id" label="ID">
+      <el-form-item prop="menu_type" label="类型">
+        <el-radio-group v-model="menuData.menu_type">
+          <el-radio-button label="菜单" :value="1" />
+          <el-radio-button label="权限" :value="2" />
+          <el-radio-button label="外链" :value="0" />
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item prop="id" label="ID">
         <el-input v-model="menuData.id" disabled />
+      </el-form-item>
+      <el-form-item prop="name" label="名称">
+        <el-input v-model="menuData.name" />
+      </el-form-item>
+      <el-form-item label="排序" prop="rank">
+        <el-input-number v-model="menuData.rank" :value-on-clear="0" />
+      </el-form-item>
+      <el-form-item prop="path" label="路由地址">
+        <el-input v-model="menuData.path" />
+      </el-form-item>
+      <el-form-item prop="component" label="组件地址">
+        <el-input v-model="menuData.component" />
       </el-form-item>
     </el-form>
     <!-- meta表单 -->
     <el-form v-if="props.isEditMode" ref="menuMetaForm" :model="menuData.meta" :rules="rules" label-width="80px" label-position="left">
-      <el-form-item prop="meta.title" label="菜单标题">
+      <el-form-item prop="title" label="菜单标题">
         <el-input v-model="menuData.meta.title" />
       </el-form-item>
     </el-form>
