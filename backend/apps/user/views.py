@@ -78,35 +78,8 @@ class LoginView(APIView):
                 expiration_time_str = expiration_time.strftime("%Y/%m/%d %H:%M:%S")
                 # 序列化user数据
                 userdata = UserSerializer(user).data
-                data = {"avatar": userdata["avatar"], "username": userdata["username"], "nickname": userdata["nickname"], "role": userdata["role"], "permissions": ["*:*:*"], "refreshToken": str(refresh), "accessToken": str(refresh.access_token), "expires": expiration_time_str}
+                data = {"avatar": userdata["avatar"], "username": userdata["username"], "nickname": userdata["nickname"], "roles": userdata["role"], "permissions": ["*:*:*"], "refreshToken": str(refresh), "accessToken": str(refresh.access_token), "expires": expiration_time_str}
                 return CustomResponse(data=data, msg="登陆成功")
 
             return CustomResponse(success=False, msg="登录信息错误", status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AsyncRoutesView(APIView):
-    """动态路由视图"""
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        # 模拟动态生成的路由数据
-        permission_router = {
-            "path": "/permission",
-            "meta": {"title": "权限管理", "icon": "ep:lollipop", "rank": 2},
-            "children": [
-                {"path": "/permission/page/index", "name": "PermissionPage", "meta": {"title": "页面权限", "roles": ["admin", "common"]}},
-                {
-                    "path": "/permission/button",
-                    "meta": {"title": "按钮权限", "roles": ["admin", "common"]},
-                    "children": [
-                        {"path": "/permission/button/router", "component": "permission/button/index", "name": "PermissionButtonRouter", "meta": {"title": "路由返回按钮权限", "auths": ["permission:btn:add", "permission:btn:edit", "permission:btn:delete"]}},
-                        {"path": "/permission/button/login", "component": "permission/button/perms", "name": "PermissionButtonLogin", "meta": {"title": "登录接口返回按钮权限"}},
-                    ],
-                },
-            ],
-        }
-
-        # 返回 JSON 响应
-        return Response({"success": True, "data": [permission_router]}, status=status.HTTP_200_OK)

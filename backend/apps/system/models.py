@@ -1,6 +1,7 @@
 from django.db import models
 from utils.models import UuidModel, BaseModel
 from rest_framework.utils import encoders
+from django.core.exceptions import ValidationError
 import json
 
 
@@ -35,12 +36,17 @@ class Menu(UuidModel, BaseModel):
 
     parent = models.ForeignKey("system.Menu", on_delete=models.SET_NULL, verbose_name=("父级菜单"), null=True, blank=True)
     menu_type = models.SmallIntegerField(choices=MenuChoices.choices, default=MenuChoices.DIRECTORY, verbose_name=("菜单类型"))
-    name = models.CharField(verbose_name=("组件名称/权限代码"), max_length=128, unique=True)
+    name = models.CharField(verbose_name=("菜单名称"), max_length=128)
     rank = models.IntegerField(verbose_name=("优先级"), default=9999)
-    path = models.CharField(verbose_name=("路由地址/api地址"), max_length=255)
+    path = models.CharField(verbose_name=("路由地址"), max_length=255, null=True)
     component = models.CharField(verbose_name=("组件地址"), max_length=255, null=True, blank=True)
     status = models.BooleanField(verbose_name=("激活"), default=True)
-    meta = models.OneToOneField("system.MenuMeta", on_delete=models.CASCADE, verbose_name=("Menu meta"))
+    meta = models.OneToOneField(
+        "system.MenuMeta",
+        on_delete=models.CASCADE,
+        verbose_name=("Menu meta"),
+        null=True,
+    )
     method = models.CharField(choices=MethodChoices.choices, null=True, blank=True, verbose_name=("Method"), max_length=10)
 
     def delete(self, using=None, keep_parents=False):

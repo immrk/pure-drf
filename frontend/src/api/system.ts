@@ -45,6 +45,47 @@ export type NewRoleResult = {
   msg: string;
 };
 
+export type MenuMeta = {
+  id: string;
+  title: string;
+  icon: string;
+  r_svg_name: string;
+  is_show_menu: boolean;
+  is_show_parent: boolean;
+  is_keepalive: boolean;
+  frame_url: string;
+  frame_loading: boolean;
+  transition_enter: string;
+  transition_leave: string;
+  is_hidden_tag: boolean;
+  fixed_tag: boolean;
+  dynamic_level: number;
+};
+
+export type Menu = {
+  id: string;
+  parent: string;
+  menu_type: number;
+  name: string;
+  rank: number;
+  path: string;
+  component: string;
+  status: boolean;
+  meta: MenuMeta;
+};
+
+export type MenusResult = {
+  success: boolean;
+  data: [];
+  msg: string;
+};
+
+export type NewMenuResult = {
+  success: boolean;
+  data: Menu;
+  msg: string;
+};
+
 /** 获取部门数据列表 */
 export const getDepartList = (params?: object) => {
   return http.request<DepartResult>("get", "/api/system/dept/", { params });
@@ -83,4 +124,24 @@ export const deleteRole = (id?: number) => {
 /** 部分更新角色数据 */
 export const patchRole = (id?: number, data?: object) => {
   return http.request<NewRoleResult>("patch", "/api/system/role/" + id + "/", { data });
+};
+
+/** 获取菜单数据列表 */
+export const getMenuList = (params?: object) => {
+  return http.request<MenusResult>("get", "/api/system/menu/", { params });
+};
+
+/** 新增菜单 */
+export const postMenu = (data?: object) => {
+  return http.request<NewMenuResult>("post", "/api/system/menu/", { data });
+};
+
+/** 删除菜单 */
+export const deleteMenu = (id?: number) => {
+  return http.request<NewMenuResult>("delete", "/api/system/menu/" + id + "/");
+};
+
+/** 部分更新菜单数据 */
+export const patchMenu = (id?: number, data?: object) => {
+  return http.request<NewMenuResult>("patch", "/api/system/menu/" + id + "/", { data });
 };

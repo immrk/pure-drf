@@ -2,7 +2,7 @@ export default {
   path: "/system",
   redirect: "/system/usermanage",
   meta: {
-    icon: "ri:information-line",
+    icon: "ri:mac-line",
     // showLink: false,
     title: "系统管理",
     rank: 1
