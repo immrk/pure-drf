@@ -90,12 +90,12 @@ const handleCancel = () => {
 const rules = {
   name: [
     { required: true, message: "请输入部门名称", trigger: "blur" },
-    { min: 2, max: 20, message: "部门名称长度限制2-10", trigger: "blur" }
+    { min: 2, max: 10, message: "部门名称长度限制2-10", trigger: "blur" }
   ],
   rank: { required: true, message: "请设置部门排序", trigger: "blur" },
   code: [
     { required: true, message: "请设置部门唯一标识代码", trigger: "blur" },
-    { min: 2, max: 15, message: "部门名称限制2-15个字符", trigger: "blur" },
+    { min: 2, max: 10, message: "部门名称限制2-10", trigger: "blur" },
     { pattern: /^\w+$/, message: "请输入字母/数字/下划线", trigger: "blur" }
   ],
   type: { required: true, message: "请选择部门类型", trigger: "blur" }

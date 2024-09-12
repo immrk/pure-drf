@@ -34,14 +34,19 @@
             <el-button type="primary" size="small" @click="handleCreat()">新增</el-button>
           </template>
           <template #default="{ row }">
-            <el-button type="text" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="text" size="small" @click="handleDelete(row)">删除</el-button>
+            <div class="ellink">
+              <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
+              <el-link :underline="false" type="primary" @click="openDrawer(row)">权限</el-link>
+              <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
+            </div>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <!-- 部门新建/编辑弹窗 -->
     <roledialog v-model:visible="isDialogVisible" :role="selectedRole" :is-edit-mode="isEditMode" :roleTree="dataList" @update:visible="isDialogVisible = $event" @save="handleSave" @cancel="handleCancel" />
+    <!-- 权限编辑抽屉 -->
+    <permissiondrawer :isVisible="isDrawerVisible" :role="selectedRole" @update:isVisible="isDrawerVisible = $event" @confirm="handleDrawerConfirm" />
   </div>
 </template>
 
@@ -50,6 +55,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { handleTree } from "@/utils/tree";
 import roledialog from "./components/roledialog.vue";
+import permissiondrawer from "./components/permissiondrawer.vue";
 import { getRoleList, postRole, deleteRole, patchRole } from "@/api/system";
 import { isAllEmpty } from "@pureadmin/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -193,6 +199,27 @@ function handleCancel() {
   console.log("取消");
 }
 
+// 权限抽屉相关
+const isDrawerVisible = ref(false);
+
+function openDrawer(row) {
+  selectedRole.value = row;
+  isDrawerVisible.value = true;
+}
+
+function handleDrawerConfirm(id, updateData) {
+  console.log("更新角色权限:", id, updateData);
+  // 提交接口更新角色权限
+  patchRole(id, updateData)
+    .then(res => {
+      onSearch();
+      message(res.msg, { type: "success" });
+    })
+    .catch(res => {
+      message(JSON.stringify(res.response.data.msg), { type: "error" });
+    });
+}
+
 onMounted(() => {
   // 计算表格高度的函数并挂载监听事件
   calculateTableHeight();
@@ -242,5 +269,11 @@ onBeforeUnmount(() => {
   .el-table {
     position: absolute;
   }
+}
+
+.ellink {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 </style>

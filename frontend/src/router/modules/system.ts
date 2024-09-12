@@ -14,7 +14,7 @@ export default {
       component: () => import("@/views/system/user/index.vue"),
       meta: {
         title: "用户管理",
-        keepAlive: true
+        keepAlive: false
       }
     },
     {
@@ -23,7 +23,7 @@ export default {
       component: () => import("@/views/system/department/index.vue"),
       meta: {
         title: "部门管理",
-        keepAlive: true
+        keepAlive: false
       }
     },
     {
@@ -32,7 +32,7 @@ export default {
       component: () => import("@/views/system/role/index.vue"),
       meta: {
         title: "角色管理",
-        keepAlive: true
+        keepAlive: false
       }
     },
     {
@@ -41,7 +41,7 @@ export default {
       component: () => import("@/views/system/permission/index.vue"),
       meta: {
         title: "菜单权限",
-        keepAlive: true
+        keepAlive: false
       }
     }
   ]

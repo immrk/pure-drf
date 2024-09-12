@@ -43,8 +43,10 @@
             <el-button type="primary" size="small" @click="handleCreat()">新增</el-button>
           </template>
           <template #default="{ row }">
-            <el-button type="text" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button type="text" size="small" @click="handleDelete(row)">删除</el-button>
+            <div class="ellink">
+              <el-button type="text" size="small" @click="handleEdit(row)">编辑</el-button>
+              <el-button type="text" size="small" @click="handleDelete(row)">删除</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -254,5 +256,11 @@ onBeforeUnmount(() => {
   .el-table {
     position: absolute;
   }
+}
+
+.ellink {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 </style>

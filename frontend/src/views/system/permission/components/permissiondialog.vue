@@ -5,11 +5,37 @@
       <el-form-item v-if="props.isEditMode" prop="id" label="ID">
         <el-input v-model="menuData.id" disabled />
       </el-form-item>
+      <el-form-item prop="menu_type" label="分类">
+        <el-radio-group v-model="menuData.menu_type" is-button>
+          <el-radio-button label="菜单" :value="1" />
+          <el-radio-button label="权限" :value="2" />
+          <el-radio-button label="直链" :value="0" />
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item prop="name" label="名称">
+        <el-input v-model="menuData.name" />
+      </el-form-item>
+      <el-form-item label="排序" prop="rank">
+        <el-input-number v-model="menuData.rank" :value-on-clear="0" />
+      </el-form-item>
+      <el-form-item prop="path" label="路由地址">
+        <el-input v-model="menuData.path" />
+      </el-form-item>
+      <el-form-item prop="component" label="组件地址">
+        <el-input v-model="menuData.component" />
+      </el-form-item>
+      <el-form-item label="激活状态" prop="status">
+        <el-switch v-model="menuData.status" :active-value="true" :inactive-value="false" />
+      </el-form-item>
     </el-form>
     <!-- meta表单 -->
-    <el-form v-if="props.isEditMode" ref="menuMetaForm" :model="menuData.meta" :rules="rules" label-width="80px" label-position="left">
+    <el-form v-if="props.isEditMode" ref="menuMetaForm" :model="menuMetaData" :rules="rules" label-width="80px" label-position="left">
+      <div class="split">
+        <p class="title">菜单详情</p>
+        <div class="line" />
+      </div>
       <el-form-item prop="meta.title" label="菜单标题">
-        <el-input v-model="menuData.meta.title" />
+        <el-input v-model="menuMetaData.title" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -41,10 +67,11 @@ const emit = defineEmits(["update:visible", "save", "cancel"]);
 // 本地状态和引用
 const dialogVisible = ref(props.visible);
 const menuData = ref({}); // 创建一个可变的本地用户数据对象
-
+const menuMetaData = ref({});
 // 打开对话框时，重置用户数据
 const handleOpen = () => {
   menuData.value = cloneDeep(props.menu);
+  menuMetaData.value = menuData.value.meta;
 };
 
 // 处理确认操作
@@ -94,5 +121,21 @@ watch(
 <style lang="scss" scoped>
 .dialog-footer {
   text-align: right;
+}
+
+.split {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.split .title {
+  white-space: nowrap;
+}
+
+.split .line {
+  height: 1px;
+  width: 100%;
+  background-color: #cccccc;
 }
 </style>
