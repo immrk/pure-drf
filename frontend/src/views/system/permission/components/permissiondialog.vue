@@ -2,7 +2,14 @@
   <el-dialog v-model="dialogVisible" :title="props.isEditMode ? '编辑菜单/权限' : '创建菜单/权限'" :width="deviceDetection() ? '90%' : '50%'" @open="handleOpen" @close="handleCancel">
     <!-- 通用表单 -->
     <el-form ref="menuForm" :model="menuData" :rules="rules" label-width="80px" label-position="left">
-      <el-form-item v-if="props.isEditMode" prop="id" label="ID">
+      <el-form-item prop="menu_type" label="类型">
+        <el-radio-group v-model="menuData.menu_type">
+          <el-radio-button label="菜单" :value="1" />
+          <el-radio-button label="权限" :value="2" />
+          <el-radio-button label="外链" :value="0" />
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item prop="id" label="ID">
         <el-input v-model="menuData.id" disabled />
       </el-form-item>
       <el-form-item prop="menu_type" label="分类">
