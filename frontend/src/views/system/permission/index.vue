@@ -181,31 +181,29 @@ function handleSave(type, data) {
     const id = data.id;
     const newdata = menuFilter(data);
     console.log(newdata);
-    patchMenu(id, newdata)
-      .then(res => {
-        onSearch();
-        message(res.msg, { type: "success" });
-      })
-      .catch(res => {
-        message(JSON.stringify(res.response.data.msg), { type: "error" });
-      });
+    // patchMenu(id, newdata)
+    //   .then(res => {
+    //     onSearch();
+    //     message(res.msg, { type: "success" });
+    //   })
+    //   .catch(res => {
+    //     message(JSON.stringify(res.response.data.msg), { type: "error" });
+    //   });
   } else if (type == "create") {
     const newdata = menuFilter(data);
     console.log(newdata);
-    postMenu(newdata)
-      .then(res => {
-        onSearch();
-        message(res.msg, { type: "success" });
-      })
-      .catch(res => {
-        message(JSON.stringify(res.response.data.msg), { type: "error" });
-      });
+    // postMenu(newdata)
+    //   .then(res => {
+    //     onSearch();
+    //     message(res.msg, { type: "success" });
+    //   })
+    //   .catch(res => {
+    //     message(JSON.stringify(res.response.data.msg), { type: "error" });
+    //   });
   }
 }
 
-function handleCancel() {
-  console.log("取消");
-}
+function handleCancel() {}
 
 onMounted(() => {
   // 计算表格高度的函数并挂载监听事件
