@@ -22,7 +22,14 @@
     <div ref="tableContainer" class="table">
       <el-table :data="dataList" style="width: 100%; margin-bottom: 20px" row-key="id" lazy :height="tableMaxHeight" default-expand-all>
         <el-table-column prop="id" label="菜单/权限ID" align="center" />
-        <el-table-column prop="name" label="名称" align="center" />
+        <el-table-column prop="name" label="名称" align="center" min-width="150px">
+          <template #default="{ row }">
+            <div style="display: flex; justify-content: center; align-items: center">
+              <component :is="useRenderIcon(row.meta.icon)" style="min-width: 15px; min-height: 15px" />
+              <span>{{ row.name }}</span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="menu_type" label="类型" align="center">
           <template #default="{ row }">
             <el-tag v-if="row.menu_type === 0">直链</el-tag>
@@ -44,8 +51,8 @@
           </template>
           <template #default="{ row }">
             <div class="ellink">
-              <el-button type="text" size="small" @click="handleEdit(row)">编辑</el-button>
-              <el-button type="text" size="small" @click="handleDelete(row)">删除</el-button>
+              <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
+              <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
             </div>
           </template>
         </el-table-column>
@@ -129,7 +136,12 @@ function handleCreat() {
     rank: 99,
     status: true,
     parent: "",
-    meta: ""
+    meta: {
+      title: null,
+      icon: null,
+      is_show_menu: true,
+      is_show_parent: true
+    }
   };
   isEditMode.value = false;
   isDialogVisible.value = true;
@@ -167,6 +179,10 @@ const selectedMenu = ref({});
 function menuFilter(data) {
   delete data.id;
   delete data.children;
+  delete data.meta.id;
+  if (data.menu_type !== 1) {
+    delete data.meta;
+  }
   // 上传时剔除空值字段
   data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
   // 若存在parent，则提取最后一个元素(element组件会默认携带列表)
@@ -181,25 +197,25 @@ function handleSave(type, data) {
     const id = data.id;
     const newdata = menuFilter(data);
     console.log(newdata);
-    // patchMenu(id, newdata)
-    //   .then(res => {
-    //     onSearch();
-    //     message(res.msg, { type: "success" });
-    //   })
-    //   .catch(res => {
-    //     message(JSON.stringify(res.response.data.msg), { type: "error" });
-    //   });
+    patchMenu(id, newdata)
+      .then(res => {
+        onSearch();
+        message(res.msg, { type: "success" });
+      })
+      .catch(res => {
+        message(JSON.stringify(res.response.data.msg), { type: "error" });
+      });
   } else if (type == "create") {
     const newdata = menuFilter(data);
     console.log(newdata);
-    // postMenu(newdata)
-    //   .then(res => {
-    //     onSearch();
-    //     message(res.msg, { type: "success" });
-    //   })
-    //   .catch(res => {
-    //     message(JSON.stringify(res.response.data.msg), { type: "error" });
-    //   });
+    postMenu(newdata)
+      .then(res => {
+        onSearch();
+        message(res.msg, { type: "success" });
+      })
+      .catch(res => {
+        message(JSON.stringify(res.response.data.msg), { type: "error" });
+      });
   }
 }
 

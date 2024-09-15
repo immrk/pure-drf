@@ -29,7 +29,7 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "parent", "menu_type", "name", "rank", "path", "component", "status", "meta", "method"]
+        fields = ["id", "parent", "menu_type", "name", "code", "rank", "path", "component", "status", "meta", "method"]
 
     def create(self, validated_data):
         """重写创建方法，创建menu数据时自动创建meta数据并创建关联关系"""
@@ -39,7 +39,7 @@ class MenuSerializer(serializers.ModelSerializer):
         if meta_data:
             menu_meta = MenuMeta.objects.create(**meta_data)
         else:
-            menu_meta = None
+            menu_meta = MenuMeta.objects.create(**{})
         # 创建 Menu 实例并关联 MenuMeta
         menu = Menu.objects.create(meta=menu_meta, **validated_data)
         return menu
@@ -81,3 +81,32 @@ class DeptInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeptInfo
         fields = ["id", "name", "code", "rank", "type", "parent", "status", "roles", "parent"]
+
+
+class RouteMetaSerializer(serializers.ModelSerializer):
+    transition = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MenuMeta
+        fields = ["id", "title", "icon", "is_show_parent", "is_show_menu", "is_keepalive", "frame_url", "frame_loading", "transition", "is_hidden_tag", "fixed_tag", "dynamic_level"]
+
+    def get_transition(self, obj):
+        return {
+            "enterTransition": obj.transition_enter,
+            "leaveTransition": obj.transition_leave,
+        }
+
+
+class RouteSerializer(serializers.ModelSerializer):
+    meta = RouteMetaSerializer(read_only=True)  # 嵌套 MenuMeta 的序列化器
+    children = serializers.SerializerMethodField()  # 用于处理子菜单
+    parent = serializers.PrimaryKeyRelatedField(queryset=Menu.objects.all(), allow_null=True)
+
+    class Meta:
+        model = Menu
+        fields = ["id", "name", "path", "menu_type", "component", "code", "rank", "meta", "parent", "children"]
+
+    def get_children(self, obj):
+        """根据parent生成children"""
+        children = Menu.objects.filter(parent=obj, menu_type=Menu.MenuChoices.MENU)
+        return RouteSerializer(children, many=True).data

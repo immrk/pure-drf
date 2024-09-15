@@ -1,4 +1,4 @@
-from .serializers import RoleSerializer, MenuSerializer, MenuMetaSerializer, DeptInfoSerializer
+from .serializers import RoleSerializer, MenuSerializer, MenuMetaSerializer, DeptInfoSerializer, RouteSerializer
 from .models import Role, Menu, MenuMeta, DeptInfo
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from utils.viewset import CustomModelViewSet
@@ -48,7 +48,14 @@ class AsyncRoutesView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        user = request.user
+        roles = user.role.all()
+        # 根据用户角色获取所有关联的菜单，避免重复通过 distinct 去重
+        menus = Menu.objects.filter(role__in=roles, menu_type=Menu.MenuChoices.MENU).distinct()
+        print("Queryset of menus:", menus)
         # 模拟动态生成的路由数据
+        serializer = RouteSerializer(menus, many=True)
+
         permission_router = {
             "path": "/permission",
             "meta": {"title": "权限管理", "icon": "ep:lollipop", "rank": 2},
@@ -66,4 +73,5 @@ class AsyncRoutesView(APIView):
         }
 
         # 返回 JSON 响应
+        # return CustomResponse(success=True, data=serializer.data, msg="成功获取动态路由")
         return CustomResponse(success=True, data=[permission_router], msg="成功获取动态路由")

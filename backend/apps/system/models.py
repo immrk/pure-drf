@@ -37,6 +37,7 @@ class Menu(UuidModel, BaseModel):
     parent = models.ForeignKey("system.Menu", on_delete=models.SET_NULL, verbose_name=("父级菜单"), null=True, blank=True)
     menu_type = models.SmallIntegerField(choices=MenuChoices.choices, default=MenuChoices.DIRECTORY, verbose_name=("菜单类型"))
     name = models.CharField(verbose_name=("菜单名称"), max_length=128)
+    code = models.CharField(verbose_name=("权限标识"), max_length=128, unique=True, null=True, default=None)
     rank = models.IntegerField(verbose_name=("优先级"), default=9999)
     path = models.CharField(verbose_name=("路由地址"), max_length=255, null=True)
     component = models.CharField(verbose_name=("组件地址"), max_length=255, null=True, blank=True)
