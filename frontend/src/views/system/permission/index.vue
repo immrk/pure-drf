@@ -37,9 +37,9 @@
             <el-tag v-else-if="row.menu_type === 2">权限</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="rank" label="排序" sortable align="center" />
+        <el-table-column prop="meta.rank" label="排序" sortable align="center" />
         <el-table-column prop="path" label="路由地址" align="center" />
-        <el-table-column prop="path" label="组件地址" align="center" />
+        <el-table-column prop="component" label="组件地址" align="center" />
         <el-table-column prop="status" label="状态" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status ? 'success' : 'danger'">{{ row.status ? "已启用" : "已禁用" }}</el-tag>
@@ -139,8 +139,11 @@ function handleCreat() {
     meta: {
       title: null,
       icon: null,
-      is_show_menu: true,
-      is_show_parent: true
+      showLink: true,
+      showParent: true,
+      keepAlive: false,
+      hiddenTag: false,
+      fixedTag: false
     }
   };
   isEditMode.value = false;
@@ -183,8 +186,12 @@ function menuFilter(data) {
   if (data.menu_type !== 1) {
     delete data.meta;
   }
-  // 上传时剔除空值字段
-  data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
+  // 上传时将各种类型空值转化成NaN
+  data = Object.fromEntries(
+    Object.entries(data).map(([key, value]) => {
+      return [key, isAllEmpty(value) ? NaN : value];
+    })
+  );
   // 若存在parent，则提取最后一个元素(element组件会默认携带列表)
   if (data.parent && Array.isArray(data.parent)) {
     data.parent = data.parent[data.parent.length - 1];

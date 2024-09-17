@@ -18,17 +18,14 @@
       <el-form-item v-if="menuData.menu_type == 2" label="权限代码" prop="code">
         <el-input v-model="menuData.code" placeholder="请输入权限唯一标识代码" />
       </el-form-item>
-      <el-form-item label="排序" prop="rank">
-        <el-input-number v-model="menuData.rank" :value-on-clear="0" />
-      </el-form-item>
       <el-form-item prop="path" label="路由地址">
         <el-input v-model="menuData.path" />
       </el-form-item>
       <el-form-item prop="component" label="组件地址">
         <el-input v-model="menuData.component" />
       </el-form-item>
-      <el-form-item label="父级部门" prop="parent">
-        <el-cascader v-model="menuData.parent" :options="props.menuTree" :props="{ value: 'id', label: 'name', children: 'children', checkStrictly: true }" clearable filterable placeholder="无父级部门" />
+      <el-form-item label="父级菜单" prop="parent">
+        <el-cascader v-model="menuData.parent" :options="props.menuTree" :props="{ value: 'id', label: 'name', children: 'children', checkStrictly: true }" clearable filterable placeholder="无父级菜单" />
       </el-form-item>
       <el-form-item label="激活状态" prop="status">
         <el-switch v-model="menuData.status" :active-value="true" :inactive-value="false" />
@@ -43,14 +40,26 @@
       <el-form-item prop="meta.title" label="菜单标题">
         <el-input v-model="menuMetaData.title" />
       </el-form-item>
-      <el-form-item label="显示菜单" prop="is_show_menu">
-        <el-switch v-model="menuMetaData.is_show_menu" :active-value="true" :inactive-value="false" />
+      <el-form-item label="显示菜单" prop="showLink">
+        <el-switch v-model="menuMetaData.showLink" :active-value="true" :inactive-value="false" />
       </el-form-item>
-      <el-form-item label="显示父级" prop="is_show_parent">
-        <el-switch v-model="menuMetaData.is_show_parent" :active-value="true" :inactive-value="false" />
+      <el-form-item label="菜单排序" prop="rank">
+        <el-input-number v-model="menuMetaData.rank" :value-on-clear="0" />
       </el-form-item>
       <el-form-item label="菜单图标" prop="icon">
         <IconSelect v-model="menuMetaData.icon" class="w-[200px]" />
+      </el-form-item>
+      <el-form-item label="显示父级" prop="showParent">
+        <el-switch v-model="menuMetaData.showParent" :active-value="true" :inactive-value="false" />
+      </el-form-item>
+      <el-form-item label="页面缓存" prop="keepAlive">
+        <el-switch v-model="menuMetaData.keepAlive" :active-value="true" :inactive-value="false" />
+      </el-form-item>
+      <el-form-item label="标签隐藏" prop="hiddenTag">
+        <el-switch v-model="menuMetaData.hiddenTag" :active-value="true" :inactive-value="false" />
+      </el-form-item>
+      <el-form-item label="标签固定" prop="fixedTag">
+        <el-switch v-model="menuMetaData.fixedTag" :active-value="true" :inactive-value="false" />
       </el-form-item>
     </el-form>
     <template #footer>

@@ -166,8 +166,14 @@ const selectedDept = ref({});
 function deptFilter(data) {
   delete data.id;
   delete data.children;
-  // 上传时剔除空值字段
-  data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
+  // 上传时将各种类型空值转化成NaN
+  data = Object.fromEntries(
+    Object.entries(data).map(([key, value]) => {
+      return [key, isAllEmpty(value) ? NaN : value];
+    })
+  );
+  // 将暂时不需要的字段删除
+  delete data.roles;
   // 若存在parent，则提取最后一个元素(element组件会默认携带列表)
   if (data.parent && Array.isArray(data.parent)) {
     data.parent = data.parent[data.parent.length - 1];

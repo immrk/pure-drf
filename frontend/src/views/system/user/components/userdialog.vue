@@ -68,7 +68,7 @@ const handleOpen = () => {
 
 // 处理确认操作
 const handleConfirm = () => {
-  deptForm.value.validate(valid => {
+  userForm.value.validate(valid => {
     emit("save", props.isEditMode ? "update" : "create", userData.value); // 向父组件发送保存事件并传递用户数据
     dialogVisible.value = false; // 关闭对话框
     emit("update:visible", false);

@@ -111,8 +111,16 @@ const selectedUser = ref({});
 function userFilter(data) {
   delete data.id;
   delete data.dept_name;
-  // 上传时剔除空值字段
-  data = Object.fromEntries(Object.entries(data).filter(([key, value]) => !isAllEmpty(value)));
+  // 上传时将各种类型空值转化成NaN
+  data = Object.fromEntries(
+    Object.entries(data).map(([key, value]) => {
+      return [key, isAllEmpty(value) ? NaN : value];
+    })
+  );
+  // 若password为空，则删除password字段
+  if (isNaN(data.password)) {
+    delete data.password;
+  }
   // 若存在dept，则提取最后一个元素(element组件会默认携带列表)
   if (data.dept && Array.isArray(data.dept)) {
     data.dept = data.dept[data.dept.length - 1];

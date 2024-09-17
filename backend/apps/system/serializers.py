@@ -16,9 +16,26 @@ class RoleSerializer(serializers.ModelSerializer):
 class MenuMetaSerializer(serializers.ModelSerializer):
     """菜单meta序列化器"""
 
+    extraIcon = serializers.CharField(source="r_svg_name", allow_null=True, required=False)
+    showLink = serializers.BooleanField(source="is_show_menu")
+    showParent = serializers.BooleanField(source="is_show_parent")
+    keepAlive = serializers.BooleanField(source="is_keepalive")
+    frameSrc = serializers.CharField(source="frame_url", allow_null=True, required=False)
+    frameLoading = serializers.BooleanField(source="frame_loading", allow_null=True, required=False)
+    hiddenTag = serializers.BooleanField(source="is_hidden_tag")
+    fixedTag = serializers.BooleanField(source="fixed_tag")
+    # 进离场动画数据自定义格式
+    transition = serializers.SerializerMethodField()
+
     class Meta:
         model = MenuMeta
-        fields = ["id", "title", "icon", "r_svg_name", "is_show_menu", "is_show_parent", "is_keepalive", "frame_url", "frame_loading", "transition_enter", "transition_leave", "is_hidden_tag", "fixed_tag", "dynamic_level"]
+        fields = ["id", "title", "icon", "rank", "extraIcon", "showLink", "showParent", "keepAlive", "frameSrc", "frameLoading", "hiddenTag", "fixedTag", "transition"]
+
+    def get_transition(self, obj):
+        return {
+            "enterTransition": obj.transition_enter,
+            "leaveTransition": obj.transition_leave,
+        }
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -29,7 +46,7 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "parent", "menu_type", "name", "code", "rank", "path", "component", "status", "meta", "method"]
+        fields = ["id", "parent", "menu_type", "name", "code", "path", "component", "status", "meta", "method"]
 
     def create(self, validated_data):
         """重写创建方法，创建menu数据时自动创建meta数据并创建关联关系"""
@@ -83,30 +100,22 @@ class DeptInfoSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", "rank", "type", "parent", "status", "roles", "parent"]
 
 
-class RouteMetaSerializer(serializers.ModelSerializer):
-    transition = serializers.SerializerMethodField()
-
-    class Meta:
-        model = MenuMeta
-        fields = ["id", "title", "icon", "is_show_parent", "is_show_menu", "is_keepalive", "frame_url", "frame_loading", "transition", "is_hidden_tag", "fixed_tag", "dynamic_level"]
-
-    def get_transition(self, obj):
-        return {
-            "enterTransition": obj.transition_enter,
-            "leaveTransition": obj.transition_leave,
-        }
-
-
 class RouteSerializer(serializers.ModelSerializer):
-    meta = RouteMetaSerializer(read_only=True)  # 嵌套 MenuMeta 的序列化器
-    children = serializers.SerializerMethodField()  # 用于处理子菜单
+    meta = serializers.SerializerMethodField()  # 嵌套 MenuMeta 的序列化器
     parent = serializers.PrimaryKeyRelatedField(queryset=Menu.objects.all(), allow_null=True)
 
     class Meta:
         model = Menu
-        fields = ["id", "name", "path", "menu_type", "component", "code", "rank", "meta", "parent", "children"]
+        fields = ["id", "name", "path", "menu_type", "component", "code", "meta", "parent"]
 
-    def get_children(self, obj):
-        """根据parent生成children"""
-        children = Menu.objects.filter(parent=obj, menu_type=Menu.MenuChoices.MENU)
-        return RouteSerializer(children, many=True).data
+    def get_meta(self, obj):
+        # Serialize the meta field using MenuMetaSerializer
+        meta_serializer = MenuMetaSerializer(obj.meta)
+        # Filter out empty fields from the meta data
+        return {key: value for key, value in meta_serializer.data.items() if value not in [None, "", [], {}]}
+
+    def to_representation(self, instance):
+        # Serialize the main instance data
+        representation = super().to_representation(instance)
+        # Filter out empty fields from the main data
+        return {key: value for key, value in representation.items() if value not in [None, "", [], {}]}

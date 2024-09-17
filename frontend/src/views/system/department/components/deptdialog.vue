@@ -95,7 +95,7 @@ const rules = {
   rank: { required: true, message: "请设置部门排序", trigger: "blur" },
   code: [
     { required: true, message: "请设置部门唯一标识代码", trigger: "blur" },
-    { min: 2, max: 10, message: "部门名称限制2-10", trigger: "blur" },
+    { min: 2, max: 50, message: "部门名称限制2-50", trigger: "blur" },
     { pattern: /^\w+$/, message: "请输入字母/数字/下划线", trigger: "blur" }
   ],
   type: { required: true, message: "请选择部门类型", trigger: "blur" }

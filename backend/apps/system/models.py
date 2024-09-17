@@ -36,9 +36,8 @@ class Menu(UuidModel, BaseModel):
 
     parent = models.ForeignKey("system.Menu", on_delete=models.SET_NULL, verbose_name=("父级菜单"), null=True, blank=True)
     menu_type = models.SmallIntegerField(choices=MenuChoices.choices, default=MenuChoices.DIRECTORY, verbose_name=("菜单类型"))
-    name = models.CharField(verbose_name=("菜单名称"), max_length=128)
+    name = models.CharField(verbose_name=("标识名称"), max_length=128)
     code = models.CharField(verbose_name=("权限标识"), max_length=128, unique=True, null=True, default=None)
-    rank = models.IntegerField(verbose_name=("优先级"), default=9999)
     path = models.CharField(verbose_name=("路由地址"), max_length=255, null=True)
     component = models.CharField(verbose_name=("组件地址"), max_length=255, null=True, blank=True)
     status = models.BooleanField(verbose_name=("激活"), default=True)
@@ -67,6 +66,7 @@ class Menu(UuidModel, BaseModel):
 class MenuMeta(UuidModel, BaseModel):
     title = models.CharField(verbose_name=("Menu title"), max_length=255, null=True, blank=True)
     icon = models.CharField(verbose_name=("Left icon"), max_length=255, null=True, blank=True)
+    rank = models.IntegerField(verbose_name=("菜单显示优先级"), default=9999)
     r_svg_name = models.CharField(verbose_name=("Right icon"), max_length=255, null=True, blank=True, help_text=("Additional icon to the right of menu name"))
     is_show_menu = models.BooleanField(verbose_name=("Show menu"), default=True)
     is_show_parent = models.BooleanField(verbose_name=("Show parent menu"), default=False)
