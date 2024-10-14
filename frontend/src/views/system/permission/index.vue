@@ -40,6 +40,7 @@
         <el-table-column prop="meta.rank" label="排序" sortable align="center" />
         <el-table-column prop="path" label="路由地址" align="center" />
         <el-table-column prop="component" label="组件地址" align="center" />
+        <el-table-column prop="code" label="权限代码" align="center" />
         <el-table-column prop="status" label="状态" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status ? 'success' : 'danger'">{{ row.status ? "已启用" : "已禁用" }}</el-tag>
