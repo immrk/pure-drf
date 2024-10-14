@@ -24,6 +24,9 @@
       <el-form-item prop="component" label="组件地址">
         <el-input v-model="menuData.component" />
       </el-form-item>
+      <el-form-item prop="redirect" label="重定向">
+        <el-input v-model="menuData.redirect" />
+      </el-form-item>
       <el-form-item label="父级菜单" prop="parent">
         <el-cascader v-model="menuData.parent" :options="props.menuTree" :props="{ value: 'id', label: 'name', children: 'children', checkStrictly: true }" clearable filterable placeholder="无父级菜单" />
       </el-form-item>

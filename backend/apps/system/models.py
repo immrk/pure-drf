@@ -48,6 +48,7 @@ class Menu(UuidModel, BaseModel):
         null=True,
     )
     method = models.CharField(choices=MethodChoices.choices, null=True, blank=True, verbose_name=("Method"), max_length=10)
+    redirect = models.CharField(verbose_name=("Redirect"), max_length=255, null=True, blank=True, help_text=("Redirect address"))
 
     def delete(self, using=None, keep_parents=False):
         if self.meta:

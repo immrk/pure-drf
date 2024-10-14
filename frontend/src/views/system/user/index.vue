@@ -23,7 +23,7 @@
       </el-form>
       <!-- 表格数据区域 -->
       <div ref="tableContainer" class="table">
-        <el-table :data="dataList" class="el-table" :height="tableMaxHeight">
+        <el-table :data="dataList" class="el-table" :height="tableMaxHeight" :show-overflow-tooltip="true">
           <el-table-column prop="id" label="ID" align="center" />
           <el-table-column prop="username" label="用户名称" align="center" />
           <el-table-column prop="nickname" label="昵称" align="center" />

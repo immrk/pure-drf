@@ -20,21 +20,21 @@
     </div>
     <!-- 表格数据区域 -->
     <div ref="tableContainer" class="table">
-      <el-table :data="dataList" style="width: 100%; margin-bottom: 20px" row-key="id" lazy :height="tableMaxHeight" default-expand-all>
-        <el-table-column prop="id" label="菜单/权限ID" align="center" />
+      <el-table :data="dataList" style="width: 100%; margin-bottom: 20px" row-key="id" lazy :height="tableMaxHeight" :show-overflow-tooltip="true">
+        <!-- <el-table-column prop="id" label="菜单/权限ID" align="center" /> -->
+        <el-table-column prop="menu_type" label="类型" align="center">
+          <template #default="{ row }">
+            <el-tag v-if="row.menu_type === 0" type="info">直链</el-tag>
+            <el-tag v-else-if="row.menu_type === 1" type="primary">菜单</el-tag>
+            <el-tag v-else-if="row.menu_type === 2" type="info">权限</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="名称" align="center" min-width="150px">
           <template #default="{ row }">
             <div style="display: flex; justify-content: center; align-items: center">
               <component :is="useRenderIcon(row.meta.icon)" style="min-width: 15px; min-height: 15px" />
               <span>{{ row.name }}</span>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="menu_type" label="类型" align="center">
-          <template #default="{ row }">
-            <el-tag v-if="row.menu_type === 0">直链</el-tag>
-            <el-tag v-else-if="row.menu_type === 1">菜单</el-tag>
-            <el-tag v-else-if="row.menu_type === 2">权限</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="meta.rank" label="排序" sortable align="center" />
@@ -244,12 +244,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-::v-deep(.el-table .cell) {
-  overflow: hidden; // 溢出隐藏
-  text-overflow: ellipsis; // 溢出用省略号显示
-  white-space: nowrap; // 规定段落中的文本不进行换行
-}
-
 .main-content {
   margin: 24px 24px 0 !important;
 }

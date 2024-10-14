@@ -46,7 +46,7 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "parent", "menu_type", "name", "code", "path", "component", "status", "meta", "method"]
+        fields = ["id", "parent", "menu_type", "name", "code", "path", "component", "status", "meta", "method", "redirect"]
 
     def create(self, validated_data):
         """重写创建方法，创建menu数据时自动创建meta数据并创建关联关系"""
@@ -106,7 +106,7 @@ class RouteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "name", "path", "menu_type", "component", "code", "meta", "parent"]
+        fields = ["id", "name", "path", "menu_type", "component", "code", "meta", "parent", "redirect"]
 
     def get_meta(self, obj):
         # Serialize the meta field using MenuMetaSerializer
