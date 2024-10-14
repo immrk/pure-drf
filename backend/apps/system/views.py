@@ -20,7 +20,7 @@ class RoleViewSet(CustomModelViewSet):
 class MenuViewSet(CustomModelViewSet):
     """菜单/权限视图集"""
 
-    queryset = Menu.objects.all()
+    queryset = Menu.objects.all().order_by("meta__rank")
     serializer_class = MenuSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = MenuFilter
