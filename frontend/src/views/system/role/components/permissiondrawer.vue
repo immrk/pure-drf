@@ -6,14 +6,14 @@
       <h4>分配权限</h4>
     </template>
     <template #default>
-      <el-tree ref="treeRef" :props="{ children: 'children', label: 'name' }" :data="treedata" node-key="id" :check-strictly="true" show-checkbox default-expand-all @check-change="handleCheckChange">
+      <el-tree ref="treeRef" :props="{ children: 'children', label: 'name' }" :data="treedata" node-key="id" :check-strictly="true" show-checkbox @check-change="handleCheckChange">
         <template #default="{ node, data }">
           <component :is="useRenderIcon('IF-team-iconlogo')" />
           <span class="custom-tree-node">
             <span
-              ><el-tag v-if="data.menu_type === 0">直链</el-tag>
+              ><el-tag v-if="data.menu_type === 0" type="info">直链</el-tag>
               <el-tag v-else-if="data.menu_type === 1">菜单</el-tag>
-              <el-tag v-else-if="data.menu_type === 2">权限</el-tag></span
+              <el-tag v-else-if="data.menu_type === 2" type="info">权限</el-tag></span
             >
             <span>{{ node.label }}</span>
           </span>
@@ -36,6 +36,7 @@ import { getMenuList } from "@/api/system";
 import { handleTree } from "@/utils/tree";
 import { cloneDeep, deviceDetection } from "@pureadmin/utils";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+import { log } from "console";
 
 // 定义父组件传入的 props
 const props = defineProps({
@@ -123,6 +124,11 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+// 穿透el-drawer__header样式
+:deep(.el-drawer__header) {
+  margin-bottom: 0 !important;
+}
+
 .custom-tree-node {
   display: flex;
   align-items: center;

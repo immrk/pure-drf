@@ -109,10 +109,16 @@ class RouteSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "path", "menu_type", "component", "code", "meta", "parent", "redirect"]
 
     def get_meta(self, obj):
+        # 获取权限字典，从上下文中提取
+        permission_dict = self.context.get("permission_dict", {})
         # Serialize the meta field using MenuMetaSerializer
         meta_serializer = MenuMetaSerializer(obj.meta)
         # Filter out empty fields from the meta data
-        return {key: value for key, value in meta_serializer.data.items() if value not in [None, "", [], {}]}
+        meta_data = {key: value for key, value in meta_serializer.data.items() if value not in [None, "", [], {}]}
+
+        # 添加 auth 列表
+        meta_data["auths"] = permission_dict.get(obj.id, [])
+        return meta_data
 
     def to_representation(self, instance):
         # Serialize the main instance data

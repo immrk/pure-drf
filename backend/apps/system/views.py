@@ -45,13 +45,22 @@ class DeptInfoViewSet(CustomModelViewSet):
 class AsyncRoutesView(APIView):
     """动态路由视图"""
 
-    permission_classes = [IsAuthenticated]
-
     def get(self, request):
         user = request.user
         roles = user.role.all()
         # 根据用户角色获取所有关联的菜单，避免重复通过 distinct 去重
-        menus = Menu.objects.filter(role__in=roles, menu_type=Menu.MenuChoices.MENU).distinct().order_by("meta__rank")
-        serializer = RouteSerializer(menus, many=True)
+        menus = Menu.objects.filter(role__in=roles, menu_type=Menu.MenuChoices.MENU, status=True).distinct().order_by("meta__rank")
+
+        # 获取用户关联的所有权限，并按照 parent_id 进行分组
+        permissions = Menu.objects.filter(role__in=roles, menu_type=Menu.MenuChoices.PERMISSION, status=True).distinct()
+        # 将权限根据 parent_id 进行分组
+        permission_dict = {}
+        for perm in permissions:
+            parent_id = perm.parent_id
+            if parent_id not in permission_dict:
+                permission_dict[parent_id] = []
+            permission_dict[parent_id].append(perm.code)
+
+        serializer = RouteSerializer(menus, many=True, context={"permission_dict": permission_dict})
         # 返回 JSON 响应
         return CustomResponse(success=True, data=serializer.data, msg="成功获取动态路由")

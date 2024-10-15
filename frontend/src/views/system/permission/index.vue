@@ -22,7 +22,7 @@
     <div ref="tableContainer" class="table">
       <el-table :data="dataList" style="width: 100%; margin-bottom: 20px" row-key="id" lazy :height="tableMaxHeight" :show-overflow-tooltip="true">
         <!-- <el-table-column prop="id" label="菜单/权限ID" align="center" /> -->
-        <el-table-column prop="menu_type" label="类型" align="center">
+        <el-table-column prop="menu_type" label="类型" align="center" width="150px">
           <template #default="{ row }">
             <el-tag v-if="row.menu_type === 0" type="info">直链</el-tag>
             <el-tag v-else-if="row.menu_type === 1" type="primary">菜单</el-tag>
