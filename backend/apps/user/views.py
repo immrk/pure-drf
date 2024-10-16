@@ -16,6 +16,7 @@ from utils.response import CustomResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import UserFilter
 from utils.viewset import CustomModelViewSet
+from utils.decorators import require_permission
 
 User = get_user_model()
 
@@ -53,6 +54,11 @@ class UserViewSet(CustomModelViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
+    # 重写list, 使用require_permission装饰器
+    @require_permission("user:data:get")
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class LoginView(APIView):
     """
@@ -69,6 +75,8 @@ class LoginView(APIView):
             password = serializer.validated_data["password"]
             user = authenticate(email=email, password=password)
             if user is not None:
+                if user.status == 0:
+                    return CustomResponse(success=False, msg="用户已被禁用", status=status.HTTP_401_UNAUTHORIZED)
                 current_time = timezone.now()
                 # 生成token
                 refresh = RefreshToken.for_user(user)

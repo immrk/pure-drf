@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # 自定义app
     "apps.user",
     "apps.system",
+    "apps.functiontest",
 ]
 
 MIDDLEWARE = [
@@ -141,6 +142,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],  # 默认过滤器
+    "EXCEPTION_HANDLER": "utils.custom_exception_handler.custom_exception_handler",  # 使用自定义异常处理
 }
 
 # jwt设置

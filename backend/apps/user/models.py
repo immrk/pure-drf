@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from apps.system.models import Menu
 
 
 class CustomUserManager(BaseUserManager):
@@ -54,3 +55,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def is_active(self):
         return self.status
+
+    def has_perm(self, perm_code, obj=None):
+        # 检查所有角色的权限
+        for role in self.role.filter(status=True):
+            # 获取当前角色关联的权限菜单
+            permissions = role.menu.filter(menu_type=Menu.MenuChoices.PERMISSION, status=True).values_list("code", flat=True)
+
+            # 如果权限代码在权限菜单中，返回 True
+            if perm_code in permissions:
+                return True
+
+        # 如果没有找到匹配的权限，返回 False
+        return False
