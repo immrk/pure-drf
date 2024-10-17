@@ -1,18 +1,6 @@
 import { defineStore } from "pinia";
-import {
-  type userType,
-  store,
-  router,
-  resetRouter,
-  routerArrays,
-  storageLocal
-} from "../utils";
-import {
-  type UserResult,
-  type RefreshTokenResult,
-  getLogin,
-  refreshTokenApi
-} from "@/api/user";
+import { type userType, store, router, resetRouter, routerArrays, storageLocal } from "../utils";
+import { type UserResult, type RefreshTokenResult, getLogin, refreshTokenApi } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
 import { message } from "@/utils/message";
@@ -31,8 +19,7 @@ export const useUserStore = defineStore({
     // 页面级别权限
     roles: storageLocal().getItem<DataInfo<number>>(userKey)?.roles ?? [],
     // 按钮级别权限
-    permissions:
-      storageLocal().getItem<DataInfo<number>>(userKey)?.permissions ?? [],
+    permissions: storageLocal().getItem<DataInfo<number>>(userKey)?.permissions ?? [],
     // 是否勾选了登录页的免登录
     isRemembered: false,
     // 登录页的免登录存储几天，默认7天
@@ -80,9 +67,7 @@ export const useUserStore = defineStore({
             resolve(data);
           })
           .catch(error => {
-            const errorMessage = error.response.data.msg
-              ? error.response.data.msg
-              : "登录服务故障";
+            const errorMessage = error.response.data.msg ? error.response.data.msg : "登录服务故障";
             message(errorMessage, { type: "error" });
             reject(error);
           });
@@ -112,9 +97,7 @@ export const useUserStore = defineStore({
           .catch(error => {
             reject(error);
             // 更新错误时，则提示登录失效并跳转登录页面
-            const errorMessage = error.response.data.msg
-              ? error.response.data.msg
-              : "更新登陆状态错误";
+            const errorMessage = error.response.data.msg ? error.response.data.msg : "更新登陆状态错误";
             message(errorMessage, { type: "error" });
             removeToken();
             router.push("/login");

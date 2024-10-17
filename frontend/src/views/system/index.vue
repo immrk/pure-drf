@@ -13,25 +13,12 @@
       <el-table-column prop="roles" label="权限角色" align="center" />
       <!-- 状态栏, "开关"展示值且可直接编辑 -->
       <el-table-column #default="scope" align="center" label="状态">
-        <el-switch
-          v-model="scope.row.is_active"
-          active-text="启用"
-          inactive-text="禁用"
-          :inline-prompt="true"
-          @change="handleStatusChange(scope.row)"
-        />
+        <el-switch v-model="scope.row.is_active" active-text="启用" inactive-text="禁用" :inline-prompt="true" @change="handleStatusChange(scope.row)" />
       </el-table-column>
       <el-table-column label="操作" align="center" fixed="right" width="150px">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-            >编辑</el-button
-          >
-          <el-button
-            size="small"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button
-          >
+          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

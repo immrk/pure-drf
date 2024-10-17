@@ -12,9 +12,31 @@ export type GroupResult = {
   msg: string;
 };
 
-// group数据列表type
 export type Group = {
+  id: number;
   name: string;
+};
+
+// permissions数据列表type
+export type PermissionResult = {
+  success: boolean;
+  data: [
+    {
+      id: number;
+      content_type_id: number;
+      name: string;
+      codename: string;
+    }
+  ];
+  msg: string;
+};
+
+// group数据列表type
+export type Permission = {
+  id: number;
+  content_type_id: number;
+  name: string;
+  codename: string;
 };
 
 // group接口
@@ -32,5 +54,9 @@ export const deletGroup = (id?: number) => {
 
 // permission接口
 export const getPermissions = () => {
-  return http.request<GroupResult>("get", "api/system/permissions/");
+  return http.request<PermissionResult>("get", "api/system/permissions/");
+};
+
+export const putPermissions = (id?: number, data?: object) => {
+  return http.request<Permission>("put", "api/system/permissions/" + id + "/", { data });
 };
