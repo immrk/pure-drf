@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from apps.system.models import Menu
 
 
 class CustomUserManager(BaseUserManager):
@@ -37,9 +38,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=100, unique=False, default=None, null=True)
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
+    status = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    create_time = models.DateTimeField(auto_now_add=True)
     role = models.ManyToManyField("system.Role", verbose_name=("角色"), blank=True)
     dept = models.ForeignKey(to="system.DeptInfo", verbose_name=("部门"), on_delete=models.PROTECT, blank=True, null=True)
 
@@ -50,3 +52,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+    def is_active(self):
+        return self.status
+
+    def has_perm(self, perm_code=None, path=None):
+        # 检查所有角色的权限
+        for role in self.role.filter(status=True):
+            if not path:
+                # 获取当前角色关联的权限菜单
+                permissions = role.menu.filter(menu_type=Menu.MenuChoices.PERMISSION, status=True).values_list("code", flat=True)
+            else:
+                # 获取当前角色关联的权限菜单
+                permissions = role.menu.filter(menu_type=Menu.MenuChoices.PERMISSION, status=True, path=path).values_list("code", flat=True)
+
+            # 如果权限代码在权限菜单中，返回 True
+            if perm_code in permissions:
+                return True
+
+        # 如果没有找到匹配的权限，返回 False
+        return False
