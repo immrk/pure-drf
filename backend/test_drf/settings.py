@@ -138,9 +138,7 @@ AUTH_USER_MODEL = "user.User"  # 指定自定义用户数据表(应用名.模型
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated", "utils.permissions.ActiveAndPermission"],  # 默认权限
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],  # 默认过滤器
     "EXCEPTION_HANDLER": "utils.custom_exception_handler.custom_exception_handler",  # 使用自定义异常处理
 }

@@ -11,3 +11,8 @@ export type Permission = {
 export const getTestPermission = (params?: object) => {
   return http.request<Permission>("get", "/api/test/permission/", { params });
 };
+
+/** 权限测试接口 */
+export const getTestPermission2 = (data?: object) => {
+  return http.request<Permission>("get", "/api/test/permission2/", { data });
+};

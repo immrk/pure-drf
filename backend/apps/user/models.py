@@ -56,11 +56,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_active(self):
         return self.status
 
-    def has_perm(self, perm_code, obj=None):
+    def has_perm(self, perm_code=None, path=None):
         # 检查所有角色的权限
         for role in self.role.filter(status=True):
-            # 获取当前角色关联的权限菜单
-            permissions = role.menu.filter(menu_type=Menu.MenuChoices.PERMISSION, status=True).values_list("code", flat=True)
+            if not path:
+                # 获取当前角色关联的权限菜单
+                permissions = role.menu.filter(menu_type=Menu.MenuChoices.PERMISSION, status=True).values_list("code", flat=True)
+            else:
+                # 获取当前角色关联的权限菜单
+                permissions = role.menu.filter(menu_type=Menu.MenuChoices.PERMISSION, status=True, path=path).values_list("code", flat=True)
 
             # 如果权限代码在权限菜单中，返回 True
             if perm_code in permissions:

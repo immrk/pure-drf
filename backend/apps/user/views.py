@@ -54,8 +54,6 @@ class UserViewSet(CustomModelViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
-    # 重写list, 使用require_permission装饰器
-    @require_permission("user:data:get")
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -65,7 +63,7 @@ class LoginView(APIView):
     登录类，调用auth的认证登录与JWT逻辑
     """
 
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # 该接口不需要任何权限
     authentication_classes = []  # 该接口不需要鉴权
 
     def post(self, request):

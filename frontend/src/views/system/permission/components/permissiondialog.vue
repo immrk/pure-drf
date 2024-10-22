@@ -18,13 +18,16 @@
       <el-form-item v-if="menuData.menu_type == 2" label="权限代码" prop="code">
         <el-input v-model="menuData.code" placeholder="请输入权限唯一标识代码" />
       </el-form-item>
-      <el-form-item prop="path" label="路由地址">
+      <el-form-item v-if="menuData.menu_type == 2" prop="path" label="接口地址">
         <el-input v-model="menuData.path" />
       </el-form-item>
-      <el-form-item prop="component" label="组件地址">
+      <el-form-item v-if="menuData.menu_type != 2" prop="path" label="路由地址">
+        <el-input v-model="menuData.path" />
+      </el-form-item>
+      <el-form-item v-if="menuData.menu_type != 2" prop="component" label="组件地址">
         <el-input v-model="menuData.component" />
       </el-form-item>
-      <el-form-item prop="redirect" label="重定向">
+      <el-form-item v-if="menuData.menu_type != 2" prop="redirect" label="重定向">
         <el-input v-model="menuData.redirect" />
       </el-form-item>
       <el-form-item label="父级菜单" prop="parent">
