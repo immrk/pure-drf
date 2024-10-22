@@ -58,6 +58,7 @@ class CustomModelViewSet(ModelViewSet):
             else:
                 # 非字典类型的错误数据，直接转换为字符串
                 errors = str(response.data)
+            print(errors)
             return CustomResponse(success=False, data=None, msg=errors, status=response.status_code)
         else:
             # 对于非 DRF 的异常类型（例如Python的原生异常），返回500错误

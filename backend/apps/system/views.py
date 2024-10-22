@@ -45,6 +45,8 @@ class DeptInfoViewSet(CustomModelViewSet):
 class AsyncRoutesView(APIView):
     """动态路由视图"""
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         user = request.user
         roles = user.role.all()
