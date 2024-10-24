@@ -36,6 +36,7 @@
           <template #default="{ row }">
             <div class="ellink">
               <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
+              <el-link :underline="false" type="primary" @click="handleCreat(row.id)">增加</el-link>
               <el-link :underline="false" type="primary" @click="openDrawer(row)">权限</el-link>
               <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
             </div>
@@ -114,14 +115,15 @@ function handleEdit(row) {
 }
 
 // 新增用户点击事件函数
-function handleCreat() {
+function handleCreat(parent = null) {
+  const parentId = parent ? parent : "";
   console.log("新增部门");
   // 新增部门默认值
   selectedRole.value = {
     name: "",
     code: "",
     status: true,
-    parent: ""
+    parent: parentId
   };
   isEditMode.value = false;
   isDialogVisible.value = true;

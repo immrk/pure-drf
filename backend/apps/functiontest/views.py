@@ -24,7 +24,5 @@ class PermissionView2(APIView):
     用于改写权限鉴别方法权限测试, 根据请求的路径自动匹配权限代码进行权限鉴别
     """
 
-    permission_classes = [ActiveAndPermission]
-
     def get(self, request, *args, **kwargs):
         return CustomResponse(success=True, data=None, msg="权限测试成功")

@@ -29,12 +29,12 @@
         </div>
       </template>
       <div class="button-content">
-        <p>装饰器方法：拥有/api/test/permission/:get可成功回调</p>
-        <el-button type="primary" @click="getData">/api/test/permission/:get</el-button>
+        <p>装饰器方法：拥有/api/test/permission/:read可成功回调</p>
+        <el-button type="primary" @click="getData">/api/test/permission/:read</el-button>
       </div>
       <div class="button-content">
-        <p>permission_classes方法：拥有/api/test/permission/:get可成功回调</p>
-        <el-button type="primary" @click="getData2">/api/test/permission/:get</el-button>
+        <p>permission_classes方法：拥有/api/test/permission2/:read可成功回调</p>
+        <el-button type="primary" @click="getData2">/api/test/permission2/:read</el-button>
       </div>
     </el-card>
   </div>

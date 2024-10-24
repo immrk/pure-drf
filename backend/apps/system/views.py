@@ -20,6 +20,8 @@ class RoleViewSet(CustomModelViewSet):
 class MenuViewSet(CustomModelViewSet):
     """菜单/权限视图集"""
 
+    permission_classes = [IsAuthenticated]
+
     queryset = Menu.objects.all().order_by("meta__rank")
     serializer_class = MenuSerializer
     filter_backends = [DjangoFilterBackend]
@@ -45,7 +47,7 @@ class DeptInfoViewSet(CustomModelViewSet):
 class AsyncRoutesView(APIView):
     """动态路由视图"""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # 仅保留登录用户访问权限限制；去除其余默认权限限制
 
     def get(self, request):
         user = request.user

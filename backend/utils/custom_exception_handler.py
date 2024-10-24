@@ -12,6 +12,9 @@ def custom_exception_handler(exc, context):
         # 若存在detail字段，则将其替换为msg字段
         if response.data.get("detail"):
             return CustomResponse(success=False, msg=response.data.get("detail"), status=response.status_code)
+        # 若存在code字段，则将其替换为msg字段
+        elif response.data.get("code"):
+            return CustomResponse(success=False, msg=response.data.get("code"), status=response.status_code)
         return CustomResponse(success=False, data=response.data, msg="请求异常", status=response.status_code)
 
     # 返回None表示异常未被处理

@@ -2,16 +2,13 @@
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import PermissionDenied
 import re
+from apps.system.models import Menu
 
 
 class ActiveAndPermission(BasePermission):
     """
     自定义权限管理, 用于判断用户是否激活和是否拥有权限代码
     """
-
-    def __init__(self, permission_code=None):
-        # 存储需要的权限代码
-        self.permission_code = permission_code
 
     def has_permission(self, request, view):
         # 判断用户是否激活
@@ -32,6 +29,10 @@ class ActiveAndPermission(BasePermission):
         method_map = {"get": "read", "post": "add", "put": "change", "patch": "change", "delete": "delete"}
         method = request.method.lower()
         permission_code = path + ":" + method_map.get(method)
+        # 判断数据表中是否存在该权限代码, 不存在则直接通过
+        if not Menu.objects.filter(code=permission_code, menu_type=Menu.MenuChoices.PERMISSION, status=True).exists():
+            return True
+        # 判断用户是否拥有该权限
         if request.user.has_perm(permission_code, path):
             return True
         else:

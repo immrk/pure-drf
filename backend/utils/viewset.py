@@ -25,11 +25,21 @@ class CustomModelViewSet(ModelViewSet):
         return CustomResponse(success=True, data=serializer.data, msg="成功获取详情")
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return CustomResponse(success=True, data=serializer.data, msg="成功创建", status=status.HTTP_201_CREATED, headers=headers)
+        # 检查请求数据是否为列表
+        if isinstance(request.data, list):
+            # 处理批量创建
+            serializer = self.get_serializer(data=request.data, many=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return CustomResponse(success=True, data=serializer.data, msg="成功批量创建", status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            # 单个对象创建
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return CustomResponse(success=True, data=serializer.data, msg="成功创建", status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
@@ -51,14 +61,9 @@ class CustomModelViewSet(ModelViewSet):
         if isinstance(exc, APIException):
             # 如果是 DRF 的标准 API 异常类型
             response = super().handle_exception(exc)
-            # 获取完整的错误信息
-            if isinstance(response.data, dict):
-                detail = response.data.get("detail", None)
-                errors = response.data if detail is None else detail
-            else:
-                # 非字典类型的错误数据，直接转换为字符串
-                errors = str(response.data)
-            print(errors)
+            if isinstance(response.data.get("msg"), list):
+                errors = response.data.get("msg")[0]
+
             return CustomResponse(success=False, data=None, msg=errors, status=response.status_code)
         else:
             # 对于非 DRF 的异常类型（例如Python的原生异常），返回500错误

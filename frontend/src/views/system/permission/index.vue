@@ -53,6 +53,8 @@
           <template #default="{ row }">
             <div class="ellink">
               <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
+              <el-link :underline="false" type="primary" @click="handleCreat(row.id)">增加</el-link>
+              <el-link v-if="row.menu_type === 1" :underline="false" type="primary" @click="handlePortPsermissionsCreat(row.id)">+权限</el-link>
               <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
             </div>
           </template>
@@ -61,6 +63,8 @@
     </div>
     <!-- 菜单/权限新建/编辑弹窗 -->
     <permissiondialog v-model:visible="isDialogVisible" :menu="selectedMenu" :is-edit-mode="isEditMode" :menuTree="dataList" @update:visible="isDialogVisible = $event" @save="handleSave" @cancel="handleCancel" />
+    <!-- 菜单增删改查接口权限增加弹窗 -->
+    <portpermissionadddialog v-model:visible="isPortDialogVisible" :parent="selectId" />
   </div>
 </template>
 
@@ -69,6 +73,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { handleTree } from "@/utils/tree";
 import permissiondialog from "./components/permissiondialog.vue";
+import portpermissionadddialog from "./components/portpermissionadddialog.vue";
 import { getMenuList, postMenu, deleteMenu, patchMenu } from "@/api/system";
 import { isAllEmpty } from "@pureadmin/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -127,16 +132,16 @@ function handleEdit(row) {
 }
 
 // 新增用户点击事件函数
-function handleCreat() {
+function handleCreat(parent = null) {
+  const parentMenu = parent ? parent : "";
   console.log("新增菜单/权限");
   // 新增菜单/权限默认值
   selectedMenu.value = {
     name: "",
     code: "",
     menu_type: 1,
-    rank: 99,
     status: true,
-    parent: "",
+    parent: parentMenu,
     meta: {
       title: null,
       icon: null,
@@ -144,7 +149,8 @@ function handleCreat() {
       showParent: true,
       keepAlive: false,
       hiddenTag: false,
-      fixedTag: false
+      fixedTag: false,
+      rank: 9999
     }
   };
   isEditMode.value = false;
@@ -179,6 +185,9 @@ const isDialogVisible = ref(false);
 const isEditMode = ref(false);
 const selectedMenu = ref({});
 
+const isPortDialogVisible = ref(false);
+const selectId = ref(null);
+
 // 编辑/新增 菜单/权限 数据过滤函数
 function menuFilter(data) {
   delete data.id;
@@ -211,7 +220,7 @@ function handleSave(type, data) {
         message(res.msg, { type: "success" });
       })
       .catch(res => {
-        message(JSON.stringify(res.response.data.msg), { type: "error" });
+        message(res.response.data.msg, { type: "error" });
       });
   } else if (type == "create") {
     const newdata = menuFilter(data);
@@ -222,12 +231,18 @@ function handleSave(type, data) {
         message(res.msg, { type: "success" });
       })
       .catch(res => {
-        message(JSON.stringify(res.response.data.msg), { type: "error" });
+        console.log(res);
+        message(res.response.data.msg, { type: "error" });
       });
   }
 }
 
 function handleCancel() {}
+
+function handlePortPsermissionsCreat(id) {
+  selectId.value = id;
+  isPortDialogVisible.value = true;
+}
 
 onMounted(() => {
   // 计算表格高度的函数并挂载监听事件
